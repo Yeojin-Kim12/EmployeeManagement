@@ -59,7 +59,7 @@ const generateSamplePayroll = (num: number, hireDate: string) => {
       date.getMonth() -
       hireDateObj.getMonth();
     const increments = Math.floor(monthsSinceHire / 3);
-    const amount = baseSalary * Math.pow(1.05, increments);
+    const amount = Math.floor(baseSalary * Math.pow(1.05, increments));
 
     samplePayroll.push({ date: date.toISOString().split("T")[0], amount });
   }
@@ -102,16 +102,16 @@ const PayrollDetails: React.FC<PayrollDetailsProps> = ({
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <Td>신규 기본급 (3개월 주기 인상 반영)</Td>
+            <Td>{newSalary.toLocaleString()}원</Td>
+          </tr>
           {visiblePayroll.map((entry, index) => (
             <tr key={index}>
               <Td>{entry.date}</Td>
               <Td>{entry.amount.toLocaleString()}원</Td>
             </tr>
           ))}
-          <tr>
-            <Td>신규 기본급 (3개월 주기 인상 반영)</Td>
-            <Td>{newSalary.toLocaleString()}원</Td>
-          </tr>
         </tbody>
       </Table>
       {visibleMonths < samplePayroll.length && (

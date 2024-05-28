@@ -18,7 +18,7 @@ const App: React.FC = () => {
   const [user, loading] = useAuthState(auth);
 
   const sampleEmployee = {
-    name: "홍길동",
+    name: "김패캠",
     department: "개발부",
     position: "주임",
     hireDate: "2020-01-01",

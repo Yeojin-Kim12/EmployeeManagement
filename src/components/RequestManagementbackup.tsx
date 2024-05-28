@@ -58,6 +58,12 @@ const RequestManagement: React.FC = () => {
             <p>유형: {request.type}</p>
             <p>날짜: {request.startDate}</p>
             <p>상태: {request.status}</p>
+            <p>
+              예상수당:{" "}
+              {request.hours && request.amount
+                ? `${request.amount.toLocaleString()}원`
+                : ""}
+            </p>
             <button onClick={() => handleUpdate(request.id, "승인")}>
               승인
             </button>
