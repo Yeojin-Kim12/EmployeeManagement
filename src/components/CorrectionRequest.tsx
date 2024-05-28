@@ -1,126 +1,148 @@
 // src/components/CorrectionRequest.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
-import { db } from "../firebase";
-import { addDoc, collection } from "firebase/firestore";
 
 const Container = styled.div`
-  border: 1px solid #dcdcdc;
   padding: 20px;
-  margin-bottom: 20px;
 `;
 
-const Header = styled.h2`
-  color: #3565f6;
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
 `;
+
+const Input = styled.input`
+  margin: 10px 0;
+  padding: 10px;
+`;
+
+const TextArea = styled.textarea`
+  margin: 10px 0;
+  padding: 10px;
+`;
+
+const Button = styled.button`
+  background-color: #3565f6;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #274bcf;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+`;
+
+const SuccessMessage = styled.p`
+  color: green;
+`;
+
+const calculateOvertimePay = (hours: number) => hours * 50000;
 
 const CorrectionRequest: React.FC = () => {
-  const [type, setType] = useState<"연장근무" | "무급휴가" | "휴일근무">(
-    "연장근무"
-  );
-  const [details, setDetails] = useState({
-    startDate: "",
-    endDate: "",
-    startTime: "",
-    endTime: "",
-    additionalInfo: "",
-  });
-  const [showPopup, setShowPopup] = useState(false);
+  const [type, setType] = useState("overtime");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [days, setDays] = useState("");
+  const [details, setDetails] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    await addDoc(collection(db, "corrections"), {
-      type,
-      ...details,
-      status: "결제 대기",
-    });
-    setShowPopup(true);
+    setError("");
+    setSuccess("");
+
+    if (type === "overtime") {
+      const start = new Date(`${date}T${startTime}`);
+      const end = new Date(`${date}T${endTime}`);
+      const hours = (end.getTime() - start.getTime()) / 1000 / 3600;
+
+      if (hours > 5) {
+        setError("연장근무는 5시간을 초과할 수 없습니다.");
+        return;
+      }
+
+      const pay = calculateOvertimePay(hours);
+      setSuccess(`연장근무 수당: ${pay.toLocaleString()}원`);
+    } else if (type === "holiday") {
+      const numOfDays = parseInt(days, 10);
+
+      if (numOfDays > 2) {
+        setError("휴일근무는 2일을 초과할 수 없습니다.");
+        return;
+      }
+
+      const start = new Date(`${date}T${startTime}`);
+      const end = new Date(`${date}T${endTime}`);
+      const hours = (end.getTime() - start.getTime()) / 1000 / 3600;
+      const pay = calculateOvertimePay(hours);
+      setSuccess(`휴일근무 수당: ${pay.toLocaleString()}원`);
+    }
+
+    // 신청 정보 서버로 전송
   };
 
   return (
     <Container>
-      <Header>정정 신청</Header>
-      <form onSubmit={handleSubmit}>
+      <h2>정정 신청</h2>
+      <Form onSubmit={handleSubmit}>
         <label>
-          신청 유형:
-          <select
-            value={type}
-            onChange={(e) =>
-              setType(e.target.value as "연장근무" | "무급휴가" | "휴일근무")
-            }
-          >
-            <option value="연장근무">연장근무</option>
-            <option value="무급휴가">무급휴가</option>
-            <option value="휴일근무">휴일근무</option>
+          신청 종류:
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="overtime">연장근무</option>
+            <option value="holiday">휴일근무</option>
           </select>
         </label>
-
         <label>
           날짜:
-          <input
+          <Input
             type="date"
-            value={details.startDate}
-            onChange={(e) =>
-              setDetails({ ...details, startDate: e.target.value })
-            }
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
         </label>
-
-        {type === "연장근무" || type === "휴일근무" ? (
-          <>
-            <label>
-              시작 시간:
-              <input
-                type="time"
-                value={details.startTime}
-                onChange={(e) =>
-                  setDetails({ ...details, startTime: e.target.value })
-                }
-              />
-            </label>
-            <label>
-              끝나는 시간:
-              <input
-                type="time"
-                value={details.endTime}
-                onChange={(e) =>
-                  setDetails({ ...details, endTime: e.target.value })
-                }
-              />
-            </label>
-          </>
-        ) : (
+        <label>
+          시작 시간:
+          <Input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+        </label>
+        <label>
+          종료 시간:
+          <Input
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+        </label>
+        {type === "holiday" && (
           <label>
-            끝나는 날짜:
-            <input
-              type="date"
-              value={details.endDate}
-              onChange={(e) =>
-                setDetails({ ...details, endDate: e.target.value })
-              }
+            근무 일수:
+            <Input
+              type="number"
+              value={days}
+              onChange={(e) => setDays(e.target.value)}
             />
           </label>
         )}
-
         <label>
           추가 내용:
-          <textarea
-            value={details.additionalInfo}
-            onChange={(e) =>
-              setDetails({ ...details, additionalInfo: e.target.value })
-            }
+          <TextArea
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
           />
         </label>
-
-        <button type="submit">신청</button>
-      </form>
-
-      {showPopup && (
-        <div>
-          <p>신청이 완료되었습니다.</p>
-          <button onClick={() => setShowPopup(false)}>닫기</button>
-        </div>
-      )}
+        <Button type="submit">신청</Button>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        {success && <SuccessMessage>{success}</SuccessMessage>}
+      </Form>
     </Container>
   );
 };

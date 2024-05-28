@@ -24,10 +24,7 @@ const App: React.FC = () => {
     hireDate: "2020-01-01",
   };
 
-  const samplePayroll = [
-    { date: "2023-04-01", amount: 3000000 },
-    { date: "2023-05-01", amount: 3100000 },
-  ];
+  const samplePayroll = [{ date: "2023-04-01", amount: 4000000 }];
 
   if (loading) {
     return <p>로딩 중...</p>;
