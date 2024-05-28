@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { calculateNewSalary } from "../utils/payroll";
 
@@ -34,12 +34,56 @@ const Td = styled.td`
   padding: 10px;
 `;
 
+const Button = styled.button`
+  background-color: #3565f6;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #274bcf;
+  }
+`;
+
+const generateSamplePayroll = (num: number, hireDate: string) => {
+  const samplePayroll = [];
+  const baseSalary = 4000000;
+  const hireDateObj = new Date(hireDate);
+
+  for (let i = 0; i < num; i++) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+
+    const monthsSinceHire =
+      (date.getFullYear() - hireDateObj.getFullYear()) * 12 +
+      date.getMonth() -
+      hireDateObj.getMonth();
+    const increments = Math.floor(monthsSinceHire / 3);
+    const amount = Math.floor(baseSalary * Math.pow(1.05, increments));
+
+    samplePayroll.push({ date: date.toISOString().split("T")[0], amount });
+  }
+
+  return samplePayroll;
+};
+
 const PayrollDetails: React.FC<PayrollDetailsProps> = ({
   employee,
   payroll,
 }) => {
   const baseSalary = 4000000;
   const newSalary = calculateNewSalary(baseSalary, employee.hireDate);
+
+  const [visibleMonths, setVisibleMonths] = useState(3);
+
+  // Generate sample payroll data for the last 10 months
+  const samplePayroll = generateSamplePayroll(10, employee.hireDate);
+
+  const handleShowMore = () => {
+    setVisibleMonths((prev) => prev + 3);
+  };
+
+  const visiblePayroll = samplePayroll.slice(0, visibleMonths);
 
   return (
     <Container>
@@ -58,18 +102,23 @@ const PayrollDetails: React.FC<PayrollDetailsProps> = ({
           </tr>
         </thead>
         <tbody>
-          {payroll.map((entry, index) => (
+          <tr>
+            <Td>신규 기본급 (3개월 주기 인상 반영)</Td>
+            <Td>{newSalary.toLocaleString()}원</Td>
+          </tr>
+          {visiblePayroll.map((entry, index) => (
             <tr key={index}>
               <Td>{entry.date}</Td>
               <Td>{entry.amount.toLocaleString()}원</Td>
             </tr>
           ))}
-          <tr>
-            <Td>신규 기본급 (3개월 주기 인상 반영)</Td>
-            <Td>{newSalary.toLocaleString()}원</Td>
-          </tr>
         </tbody>
       </Table>
+      {visibleMonths < samplePayroll.length && (
+        <Button onClick={handleShowMore}>더보기</Button>
+      )}
     </Container>
   );
 };
+
+export default PayrollDetails;
