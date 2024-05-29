@@ -1,4 +1,3 @@
-// src/utils/payroll.ts
 export const calculateNewSalary = (
   baseSalary: number,
   hireDate: string
