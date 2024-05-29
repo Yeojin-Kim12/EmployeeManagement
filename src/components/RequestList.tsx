@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 
 const Container = styled.div`
   padding: 20px;
@@ -24,6 +24,17 @@ const Td = styled.td`
   padding: 10px;
 `;
 
+const Button = styled.button`
+  background-color: #3565f6;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #274bcf;
+  }
+`;
+
 const RequestConfirmation: React.FC = () => {
   const [requests, setRequests] = useState<any[]>([]);
 
@@ -40,6 +51,11 @@ const RequestConfirmation: React.FC = () => {
     fetchRequests();
   }, []);
 
+  const handleDelete = async (id: string) => {
+    await deleteDoc(doc(db, "corrections", id));
+    setRequests((prevRequests) => prevRequests.filter((req) => req.id !== id));
+  };
+
   return (
     <Container>
       <h2>신청 내역 확인</h2>
@@ -49,12 +65,13 @@ const RequestConfirmation: React.FC = () => {
             <Th>신청 유형</Th>
             <Th>정정 날짜</Th>
             <Th>시작 시간</Th>
-            <Th>끝나는 시간</Th>
+            <Th>종료 시간</Th>
             <Th>시작 날짜</Th>
-            <Th>끝나는 날짜</Th>
+            <Th>종료 날짜</Th>
             <Th>추가 내용</Th>
             <Th>예상 수당</Th>
             <Th>상태</Th>
+            <Th>조치</Th>
           </tr>
         </thead>
         <tbody>
@@ -73,6 +90,9 @@ const RequestConfirmation: React.FC = () => {
                   : "N/A"}
               </Td>
               <Td>{request.status}</Td>
+              <Td>
+                <Button onClick={() => handleDelete(request.id)}>삭제</Button>
+              </Td>
             </tr>
           ))}
         </tbody>

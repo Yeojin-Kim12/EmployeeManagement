@@ -91,9 +91,9 @@ const RequestManagement: React.FC = () => {
             <Th>신청 유형</Th>
             <Th>정정 날짜</Th>
             <Th>시작 시간</Th>
-            <Th>끝나는 시간</Th>
+            <Th>종료 시간</Th>
             <Th>시작 날짜</Th>
-            <Th>끝나는 날짜</Th>
+            <Th>종료 날짜</Th>
             <Th>추가 내용</Th>
             <Th>예상 수당</Th>
             <Th>상태</Th>
