@@ -10,7 +10,7 @@ import PayrollDetails from "./components/PayrollDetails";
 import CorrectionRequest from "./components/CorrectionRequest";
 import RequestList from "./components/RequestList";
 import RequestManagement from "./components/RequestManagement";
-import Login from "./components/Login";
+// import Login from "./components/Login";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 
@@ -34,7 +34,7 @@ const App: React.FC = () => {
     <Router>
       <GlobalStyles />
       <Routes>
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route
           path="/"
           element={

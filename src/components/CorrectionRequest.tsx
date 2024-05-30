@@ -77,7 +77,9 @@ const CorrectionRequest: React.FC = () => {
         </label>
 
         <label>
-          정정 날짜:
+          {type === "연장근무" || type === "휴일근무"
+            ? "정정 날짜"
+            : "시작 날짜"}
           <input
             type="date"
             value={details.startDate}

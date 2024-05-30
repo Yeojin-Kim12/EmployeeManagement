@@ -57,23 +57,11 @@ const RequestManagement: React.FC = () => {
     fetchRequests();
   }, []);
 
-  const handleApprove = async (id: string) => {
+  const handleUpdateStatus = async (id: string, status: string) => {
     const requestDoc = doc(db, "corrections", id);
-    await updateDoc(requestDoc, { status: "승인" });
+    await updateDoc(requestDoc, { status });
     setRequests((prevRequests) =>
-      prevRequests.map((req) =>
-        req.id === id ? { ...req, status: "승인" } : req
-      )
-    );
-  };
-
-  const handleReject = async (id: string) => {
-    const requestDoc = doc(db, "corrections", id);
-    await updateDoc(requestDoc, { status: "반려" });
-    setRequests((prevRequests) =>
-      prevRequests.map((req) =>
-        req.id === id ? { ...req, status: "반려" } : req
-      )
+      prevRequests.map((req) => (req.id === id ? { ...req, status } : req))
     );
   };
 
@@ -104,11 +92,11 @@ const RequestManagement: React.FC = () => {
           {requests.map((request) => (
             <tr key={request.id}>
               <Td>{request.type}</Td>
-              <Td>{request.startDate}</Td>
-              <Td>{request.startTime}</Td>
-              <Td>{request.endTime}</Td>
-              <Td>{request.startDate}</Td>
-              <Td>{request.endDate}</Td>
+              <Td>{request.startDate || "N/A"}</Td>
+              <Td>{request.startTime || "N/A"}</Td>
+              <Td>{request.endTime || "N/A"}</Td>
+              <Td>{request.startDate || "N/A"}</Td>
+              <Td>{request.endDate || "N/A"}</Td>
               <Td>{request.additionalInfo}</Td>
               <Td>
                 {request.estimatedPay
@@ -117,8 +105,12 @@ const RequestManagement: React.FC = () => {
               </Td>
               <Td>{request.status}</Td>
               <Td>
-                <Button onClick={() => handleApprove(request.id)}>승인</Button>
-                <Button onClick={() => handleReject(request.id)}>반려</Button>
+                <Button onClick={() => handleUpdateStatus(request.id, "승인")}>
+                  승인
+                </Button>
+                <Button onClick={() => handleUpdateStatus(request.id, "반려")}>
+                  반려
+                </Button>
                 <Button onClick={() => handleDelete(request.id)}>삭제</Button>
               </Td>
             </tr>
