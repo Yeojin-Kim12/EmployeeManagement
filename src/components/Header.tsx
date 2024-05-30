@@ -12,7 +12,6 @@ const items = [
 
 const Header = () => {
   const location = useLocation();
-  console.log(location.pathname);
 
   return (
     <HeaderContainer>
