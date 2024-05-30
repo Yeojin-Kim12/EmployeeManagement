@@ -1,8 +1,15 @@
 import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import GlobalStyles from "./GlobalStyles";
 import PayrollDetails from "./components/PayrollDetails";
-
-// import Login from "./components/Login";
+import CorrectionRequest from "./components/CorrectionRequest";
+import RequestList from "./components/RequestList";
+import RequestManagement from "./components/RequestManagement";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 
@@ -10,7 +17,7 @@ const App: React.FC = () => {
   const [user, loading] = useAuthState(auth);
 
   const sampleEmployee = {
-    name: "김패캠",
+    name: "김백업",
     department: "개발부",
     position: "주임",
     hireDate: "2020-01-01",
@@ -23,10 +30,47 @@ const App: React.FC = () => {
   }
 
   return (
-    <>
+    <Router>
       <GlobalStyles />
-      <PayrollDetails employee={sampleEmployee} payroll={samplePayroll} />
-    </>
+      <Routes>
+        {/* <Route path="/login" element={<Login />} /> */}
+        <Route
+          path="/"
+          element={
+            <Navigate to={user ? "/payroll-details" : "/login"} replace />
+          }
+        />
+        <Route
+          path="/payroll-details"
+          element={
+            user ? (
+              <PayrollDetails
+                employee={sampleEmployee}
+                payroll={samplePayroll}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/correction-request"
+          element={
+            user ? <CorrectionRequest /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/request-list"
+          element={user ? <RequestList /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/request-management"
+          element={
+            user ? <RequestManagement /> : <Navigate to="/login" replace />
+          }
+        />
+      </Routes>
+    </Router>
   );
 };
 
