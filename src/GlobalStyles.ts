@@ -6,6 +6,7 @@ const GlobalStyles = createGlobalStyle`
     background-color: #fff;
     color: #161616;
     font-family: Arial, sans-serif;
+    position: relative;
   }
 
   button {

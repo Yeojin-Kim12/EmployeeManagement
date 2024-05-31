@@ -5,6 +5,8 @@ import { db } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
 
 const Container = styled.div`
+  width: 600px;
+  margin: 0 auto;
   border: 1px solid #dcdcdc;
   padding: 20px;
   margin-bottom: 20px;

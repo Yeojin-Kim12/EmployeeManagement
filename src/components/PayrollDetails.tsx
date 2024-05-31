@@ -49,7 +49,7 @@ const Button = styled.button`
 
 const PayrollDetails: React.FC<PayrollDetailsProps> = ({
   employee,
-  payroll,
+  // payroll,
 }) => {
   const baseSalary = 4000000;
   const newSalary = calculateNewSalary(baseSalary, employee.hireDate);
