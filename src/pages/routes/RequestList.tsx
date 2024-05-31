@@ -1,7 +1,7 @@
 // src/components/RequestConfirmation.tsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 
 const Container = styled.div`

@@ -1,7 +1,7 @@
 // src/components/RequestManagement.tsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import {
   collection,
   getDocs,

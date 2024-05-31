@@ -1,11 +1,11 @@
 // src/components/CorrectionRequest.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { addDoc, collection } from "firebase/firestore";
 
 const Container = styled.div`
-  width: 600px;
+  width: 800px;
   margin: 0 auto;
   border: 1px solid #dcdcdc;
   padding: 20px;
