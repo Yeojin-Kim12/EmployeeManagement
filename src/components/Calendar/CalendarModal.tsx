@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 const CalendarModal = () => {
@@ -6,7 +6,8 @@ const CalendarModal = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [color, setColor] = useState("");
-
+  //build error제거용 콘솔로그
+  console.log(color)
   return (
     <ModalContainer>
       <ModalContent>

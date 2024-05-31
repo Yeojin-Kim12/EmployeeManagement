@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { calculateNewSalary, generateSamplePayroll } from "../utils/payroll";
-import { db } from "../firebase";
+// import { db } from "../firebase";
 // import { collection, getDocs } from "firebase/firestore";
 
 interface Employee {

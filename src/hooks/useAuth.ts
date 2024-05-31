@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebaseCofig';
+import { auth } from '../firebase';
 import { setUser, clearUser } from '../redux/slices/authSlice';
 
 export const useAuth = () => {
