@@ -1,9 +1,8 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 const items = [
-  { name: "내 인사정보", url: "/1" },
+  { name: "내 인사정보", url: "/profile" },
   { name: "급여 내역", url: "/payroll-details" },
   { name: "정정 신청", url: "/correction-request" },
   { name: "정정 내역", url: "/request-list" },
