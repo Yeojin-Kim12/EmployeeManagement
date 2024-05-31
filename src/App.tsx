@@ -1,13 +1,12 @@
-// src/App.tsx
-import React from "react";
-import Login from "./Component/Login";
+import "./App.css";
+import Router from "./Router";
 
-const App: React.FC = () => {
+function App() {
   return (
     <div>
-      <Login />
+      <Router />
     </div>
   );
-};
+}
 
 export default App;
