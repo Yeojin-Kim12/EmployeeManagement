@@ -3,10 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 const items = [
-  { name: "내 인사정보", url: "/1" },
-  { name: "급여 내역", url: "/2" },
-  { name: "정정 신청", url: "/3" },
-  { name: "정정 내역", url: "/4" },
+  { name: "내 인사정보", url: "/profile" },
+  { name: "급여 내역", url: "/payroll-details" },
+  { name: "정정 신청", url: "/correction-request" },
+  { name: "정정 내역", url: "/request-list" },
+  { name: "정정 관리", url: "/request-management" },
   { name: "업무 관리", url: "/calendar" },
 ];
 
