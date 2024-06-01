@@ -55,7 +55,7 @@ const CorrectionRequest: React.FC = () => {
         alert("휴일근무는 2일을 초과할 수 없습니다.");
         return;
       }
-      pay = hours * 50000;
+      pay = Math.floor(hours * 50000);
     }
     setEstimatedPay(pay);
   };
