@@ -1,8 +1,7 @@
-// src/components/RequestConfirmation.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { db } from "../firebase";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { useRequest } from "../hooks/useRequest";
+import TableHeader from "../components/Payroll/TableHeader";
 
 const Container = styled.div`
   padding: 20px;
@@ -11,12 +10,6 @@ const Container = styled.div`
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-`;
-
-const Th = styled.th`
-  border: 1px solid #dcdcdc;
-  padding: 10px;
-  background-color: #f0f0f0;
 `;
 
 const Td = styled.td`
@@ -36,44 +29,26 @@ const Button = styled.button`
 `;
 
 const RequestConfirmation: React.FC = () => {
-  const [requests, setRequests] = useState<any[]>([]);
+  const { requests, handleDelete } = useRequest();
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      const querySnapshot = await getDocs(collection(db, "corrections"));
-      const requestData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setRequests(requestData);
-    };
-
-    fetchRequests();
-  }, []);
-
-  const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, "corrections", id));
-    setRequests((prevRequests) => prevRequests.filter((req) => req.id !== id));
-  };
+  const columns = [
+    "신청 유형",
+    "정정 날짜",
+    "시작 시간",
+    "종료 시간",
+    "시작 날짜",
+    "종료 날짜",
+    "추가 내용",
+    "예상 수당",
+    "상태",
+    "조치",
+  ];
 
   return (
     <Container>
       <h2>신청 내역 확인</h2>
       <Table>
-        <thead>
-          <tr>
-            <Th>신청 유형</Th>
-            <Th>정정 날짜</Th>
-            <Th>시작 시간</Th>
-            <Th>종료 시간</Th>
-            <Th>시작 날짜</Th>
-            <Th>종료 날짜</Th>
-            <Th>추가 내용</Th>
-            <Th>예상 수당</Th>
-            <Th>상태</Th>
-            <Th>조치</Th>
-          </tr>
-        </thead>
+        <TableHeader columns={columns} />
         <tbody>
           {requests.map((request) => (
             <tr key={request.id}>

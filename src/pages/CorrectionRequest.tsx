@@ -1,4 +1,3 @@
-// src/components/CorrectionRequest.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import { db } from "../firebase";
@@ -51,7 +50,7 @@ const CorrectionRequest: React.FC = () => {
         alert("연장근무는 5시간을 초과할 수 없습니다.");
         return;
       }
-      if (hours > 2 && type === "휴일근무") {
+      if (hours > 48 && type === "휴일근무") {
         alert("휴일근무는 2일을 초과할 수 없습니다.");
         return;
       }
