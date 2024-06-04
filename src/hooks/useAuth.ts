@@ -1,36 +1,87 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { setUser, clearUser } from '../redux/slices/authSlice';
+import { RootState } from '../redux/store';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { useEffect, useCallback } from 'react';
+
+interface UserData {
+  email: string,
+  displayName?: string | null,
+  photoURL?: string | null,
+  joinDate?: string,
+  position?: string,
+  department?: string
+}
 
 export const useAuth = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const persistUser = async (userData: UserData) => {
+    const userDoc = doc(db, 'users', userData.email);
+    const userSnapshot = await getDoc(userDoc);
+    
+    if (!userSnapshot.exists()) {
+      await setDoc(userDoc, userData);
+    }
+    
+    localStorage.setItem('user', JSON.stringify(userData));
+    dispatch(setUser(userData));
+  };
 
   const signIn = async (email: string, password: string) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    dispatch(setUser(userCredential.user));
+    const userData: UserData = {
+      email: userCredential.user.email
+    } as UserData;
+    await persistUser(userData);
   };
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
-    dispatch(setUser(userCredential.user));
+    const userData: UserData = {
+      email: userCredential.user.email,
+      displayName: userCredential.user.displayName,
+      photoURL: userCredential.user.photoURL
+    } as UserData;
+    await persistUser(userData);
   };
 
   const register = async (email: string, password: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    dispatch(setUser(userCredential.user));
+    const userData: UserData = {
+      email: userCredential.user.email
+    } as UserData;
+    await persistUser(userData);
   };
 
   const signOutUser = async () => {
     await signOut(auth);
+    localStorage.removeItem('user');
     dispatch(clearUser());
   };
 
+  const loadUserFromLocalStorage = useCallback(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userData: UserData = JSON.parse(storedUser);
+      dispatch(setUser(userData));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadUserFromLocalStorage();
+  }, [loadUserFromLocalStorage]);
+
   return {
+    user,
     signIn,
     signInWithGoogle,
     register,
     signOutUser,
+    loadUserFromLocalStorage,
   };
 };

@@ -1,7 +1,3 @@
-//중앙정렬
-//flex
-//좌측에 프로필이미지
-//우측에 프로필인포
 import styled from "styled-components";
 import ProfileImage from "../components/Profile/ProfileImage";
 import ProfileInfo from "../components/Profile/ProfileInfo";
@@ -18,10 +14,10 @@ const ProfileContainer = styled.div`
 const Profile = () => {
   return (
     <ProfileContainer>
-      <ProfileImage/>
-      <ProfileInfo/>
+      <ProfileImage />
+      <ProfileInfo />
     </ProfileContainer>
-  )
+  );
 }
 
-export default Profile
+export default Profile;

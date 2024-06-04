@@ -1,33 +1,13 @@
-//redux에 있는 정보 긁어와도 되나?
-//프로필 정보 표시
-//이름
-//이메일
-//포지션
-//직위
-//입사일
-import styled from "styled-components"
-
-interface User{
-  name : String,
-  email : String,
-  position: String,
-  department: String,
-  joiningDate: String
-}
-
-const dump:User = {
-  name : '예시',
-  email: 'ex@example.com',
-  position: '리더',
-  department: 'FE',
-  joiningDate: '20240531'
-}
+import styled from "styled-components";
+import { useEffect } from 'react';
+import { useUser } from '../../hooks/useUser';
+import { useAuth } from "../../hooks/useAuth";
 
 const ProfileInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-left: 2rem; /* 프로필 이미지와 간격 */
+  margin-left: 2rem;
 `;
 
 const InfoItem = styled.div`
@@ -36,15 +16,29 @@ const InfoItem = styled.div`
 `;
 
 const ProfileInfo = () => {
+  const { userInfo, fetch, loading, error } = useUser();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    console.log(user);
+    if (user && user.email) {
+      fetch(user.email);
+    }
+  }, [user, fetch]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!userInfo) return <p>유저 정보를 불러오지 못했습니다.</p>;
+
   return (
     <ProfileInfoContainer>
-      <InfoItem>이름: {dump.name}</InfoItem>
-      <InfoItem>이메일: {dump.email}</InfoItem>
-      <InfoItem>직급: {dump.position}</InfoItem>
-      <InfoItem>부서: {dump.department}</InfoItem>
-      <InfoItem>입사일: {dump.joiningDate}</InfoItem>
+      <InfoItem>이름: {userInfo?.displayName}</InfoItem>
+      <InfoItem>이메일: {userInfo?.email}</InfoItem>
+      <InfoItem>직급: {userInfo?.position}</InfoItem>
+      <InfoItem>부서: {userInfo?.department}</InfoItem>
+      <InfoItem>입사일: {userInfo?.joinDate}</InfoItem>
     </ProfileInfoContainer>
-  )
+  );
 }
 
-export default ProfileInfo
+export default ProfileInfo;
