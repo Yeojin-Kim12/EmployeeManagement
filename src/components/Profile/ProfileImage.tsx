@@ -10,17 +10,33 @@ const ProfileImageContainer = styled.div`
   align-items: center;
 `;
 
+const ImageWrapper = styled.div`
+  width: 100%; 
+  position: relative; 
+  padding-top: 100%; 
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: black;
+`;
+
 const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   border-radius: 50%;
 `;
+
 
 const EditButton = styled.button`
   margin-top: 1.5rem;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   cursor: pointer;
+  opacity: ${(props) => (props.disabled ? "0.5" : "1")}; // 비활성화 시 투명도 조절
+  pointer-events: ${(props) => (props.disabled ? "none" : "auto")}; // 비활성화 시 클릭 이벤트 제거
 `;
 
 const HiddenFileInput = styled.input`
@@ -31,6 +47,7 @@ const ProfileImage = () => {
   const { userInfo, fetch, update, loading, error } = useUser();
   const { user } = useAuth();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false); // 업로드 상태 관리
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -48,13 +65,22 @@ const ProfileImage = () => {
 
   const handleUpdateProfileImage = async () => {
     if (selectedFile && user) {
-      const storage = getStorage();
-      const storageRef = ref(storage, `profilePictures/${user.email}`);
-      await uploadBytes(storageRef, selectedFile);
-      const downloadURL = await getDownloadURL(storageRef);
+      setUploading(true); // 업로드 시작
+      try {
+        const storage = getStorage();
+        const storageRef = ref(storage, `profilePictures/${user.email}`);
+        await uploadBytes(storageRef, selectedFile);
+        const downloadURL = await getDownloadURL(storageRef);
 
-      update(user.email as string, { photoURL: downloadURL });
-      setSelectedFile(null); // 파일 선택 초기화
+        update(user.email as string, { photoURL: downloadURL });
+        setSelectedFile(null); // 파일 선택 초기화
+        alert("업로드가 완료되었습니다.");
+      } catch (error) {
+        console.error(error);
+        alert("업로드에 실패했습니다.");
+      } finally {
+        setUploading(false); // 업로드 종료
+      }
     }
   };
 
@@ -70,15 +96,26 @@ const ProfileImage = () => {
 
   return (
     <ProfileImageContainer>
-      <Image src={userInfo?.photoURL || '디폴트이미지'} alt="Profile" />
-      <EditButton onClick={handleEditButtonClick}>이미지 수정</EditButton>
+      <ImageWrapper>
+        <Image src={userInfo?.photoURL || '디폴트이미지'} alt="Profile" />
+      </ImageWrapper>
+      <EditButton
+        onClick={handleEditButtonClick}
+        disabled={uploading} // 업로드 중일 때 버튼 비활성화
+      >
+        이미지 수정
+      </EditButton>
       <HiddenFileInput
         ref={fileInputRef}
         type="file"
         accept="image/*"
         onChange={handleFileChange}
       />
-      {selectedFile && <button onClick={handleUpdateProfileImage}>업로드</button>}
+      {selectedFile && (
+        <button onClick={handleUpdateProfileImage} disabled={uploading}>
+          업로드
+        </button>
+      )}
     </ProfileImageContainer>
   );
 };
