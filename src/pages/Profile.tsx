@@ -12,16 +12,16 @@ const ProfileContainer = styled.div`
   justify-content: center;
   align-items: center;
   width: 80vh;
-  height: 80vh;
+  height: 60vh;
 `;
 
 const Profile = () => {
   return (
     <ProfileContainer>
-      <ProfileImage/>
-      <ProfileInfo/>
+      <ProfileImage />
+      <ProfileInfo />
     </ProfileContainer>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

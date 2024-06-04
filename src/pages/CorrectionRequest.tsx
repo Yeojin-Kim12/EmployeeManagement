@@ -8,7 +8,7 @@ const Container = styled.div`
   width: 800px;
   margin-left: 2rem;
   padding: 20px;
-  margin-bottom: 20px;
+  margin: 0 auto;
 `;
 const Header = styled.h3`
   color: black;

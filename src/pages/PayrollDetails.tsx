@@ -18,6 +18,8 @@ interface PayrollDetailsProps {
 const Container = styled.div`
   padding: 20px;
   display: flex;
+  max-width: 1300px;
+  margin: 0 auto;
 `;
 const ProfileInfoWrapper = styled.div`
   display: flex-column;
