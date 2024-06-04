@@ -17,15 +17,28 @@ interface PayrollDetailsProps {
 
 const Container = styled.div`
   padding: 20px;
+  display: flex;
+`;
+const ProfileInfoWrapper = styled.div`
+  display: flex-column;
+`;
+const DetailsWrapper = styled.div`
+  display: flex-column;
+  width: 70%;
+  margin-left: 6rem;
 `;
 
 const PayrollDetails: React.FC<PayrollDetailsProps> = () => {
   return (
     <Container>
-      <h2>직원 정보</h2>
-      <ProfileInfo />
-      <h2>급여 내역</h2>
-      <Details />
+      <ProfileInfoWrapper>
+        <h3 style={{ marginLeft: "2rem" }}>직원 정보</h3>
+        <ProfileInfo />
+      </ProfileInfoWrapper>
+      <DetailsWrapper>
+        <h3>급여 내역</h3>
+        <Details />
+      </DetailsWrapper>
     </Container>
   );
 };

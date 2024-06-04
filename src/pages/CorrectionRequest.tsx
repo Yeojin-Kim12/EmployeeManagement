@@ -1,18 +1,48 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { BlueButton } from "../GlobalStyles";
 import { db } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
 
 const Container = styled.div`
   width: 800px;
-  margin: 0 auto;
-  border: 1px solid #dcdcdc;
+  margin-left: 2rem;
   padding: 20px;
   margin-bottom: 20px;
 `;
-
-const Header = styled.h2`
-  color: #3565f6;
+const Header = styled.h3`
+  color: black;
+`;
+const Form = styled.form`
+  display: flex;
+`;
+const TypeOptions = styled.div`
+  display: flex-column;
+  font-weight: 500;
+`;
+const Select = styled.select`
+  width: 150px;
+  height: 40px;
+  margin-top: 10px;
+  font-size: 1rem;
+  padding: 0 5px;
+  background-color: var(--color-gray);
+`;
+const CorrectionFields = styled.div`
+  display: flex-column;
+  margin-left: 10rem;
+  font-weight: 500;
+`;
+const Input = styled.input`
+  background-color: var(--color-gray);
+  height: 25px;
+  margin-top: 7px;
+  font-size: 1rem;
+`;
+const TextArea = styled.textarea`
+  background-color: var(--color-gray);
+  margin-top: 7px;
+  font-size: 1rem;
 `;
 
 const CorrectionRequest: React.FC = () => {
@@ -62,93 +92,98 @@ const CorrectionRequest: React.FC = () => {
   return (
     <Container>
       <Header>정정 신청</Header>
-      <form onSubmit={handleSubmit}>
-        <label>
-          신청 유형:
-          <select
-            value={type}
-            onChange={(e) =>
-              setType(e.target.value as "연장근무" | "무급휴가" | "휴일근무")
-            }
-          >
-            <option value="연장근무">연장근무</option>
-            <option value="무급휴가">무급휴가</option>
-            <option value="휴일근무">휴일근무</option>
-          </select>
-        </label>
 
-        <label>
-          {type === "연장근무" || type === "휴일근무"
-            ? "정정 날짜"
-            : "시작 날짜"}
-          <input
-            type="date"
-            value={details.startDate}
-            onChange={(e) =>
-              setDetails({ ...details, startDate: e.target.value })
-            }
-          />
-        </label>
-
-        {type === "연장근무" || type === "휴일근무" ? (
-          <>
-            <label>
-              시작 시간:
-              <input
-                type="time"
-                value={details.startTime}
-                onChange={(e) =>
-                  setDetails({ ...details, startTime: e.target.value })
-                }
-                onBlur={calculatePay}
-              />
-            </label>
-            <label>
-              끝나는 시간:
-              <input
-                type="time"
-                value={details.endTime}
-                onChange={(e) =>
-                  setDetails({ ...details, endTime: e.target.value })
-                }
-                onBlur={calculatePay}
-              />
-            </label>
-          </>
-        ) : (
+      <Form onSubmit={handleSubmit}>
+        <TypeOptions>
           <label>
-            끝나는 날짜:
-            <input
-              type="date"
-              value={details.endDate}
+            신청 유형:
+            <Select
+              value={type}
               onChange={(e) =>
-                setDetails({ ...details, endDate: e.target.value })
+                setType(e.target.value as "연장근무" | "무급휴가" | "휴일근무")
+              }
+            >
+              <option value="연장근무">연장근무</option>
+              <option value="무급휴가">무급휴가</option>
+              <option value="휴일근무">휴일근무</option>
+            </Select>
+          </label>
+        </TypeOptions>
+
+        <CorrectionFields>
+          <label>
+            {type === "연장근무" || type === "휴일근무"
+              ? "정정 날짜:"
+              : "시작 날짜:"}
+            <Input
+              type="date"
+              value={details.startDate}
+              onChange={(e) =>
+                setDetails({ ...details, startDate: e.target.value })
               }
             />
           </label>
-        )}
 
-        <label>
-          추가 내용:
-          <textarea
-            value={details.additionalInfo}
-            onChange={(e) =>
-              setDetails({ ...details, additionalInfo: e.target.value })
-            }
-          />
-        </label>
+          {type === "연장근무" || type === "휴일근무" ? (
+            <>
+              <label>
+                시작 시간:
+                <Input
+                  type="time"
+                  value={details.startTime}
+                  onChange={(e) =>
+                    setDetails({ ...details, startTime: e.target.value })
+                  }
+                  onBlur={calculatePay}
+                />
+              </label>
+              <label>
+                끝나는 시간:
+                <Input
+                  type="time"
+                  value={details.endTime}
+                  onChange={(e) =>
+                    setDetails({ ...details, endTime: e.target.value })
+                  }
+                  onBlur={calculatePay}
+                />
+              </label>
+            </>
+          ) : (
+            <label>
+              끝나는 날짜:
+              <Input
+                type="date"
+                value={details.endDate}
+                onChange={(e) =>
+                  setDetails({ ...details, endDate: e.target.value })
+                }
+              />
+            </label>
+          )}
 
-        <button type="submit">신청</button>
-      </form>
+          <label>
+            추가 내용:
+            <TextArea
+              value={details.additionalInfo}
+              onChange={(e) =>
+                setDetails({ ...details, additionalInfo: e.target.value })
+              }
+            />
+          </label>
 
-      {showPopup && (
-        <div>
-          <p>
-            신청이 완료되었습니다. 예상 수당: {estimatedPay.toLocaleString()}원
-          </p>
-          <button onClick={() => setShowPopup(false)}>닫기</button>
-        </div>
-      )}
+          <BlueButton type="submit">신청</BlueButton>
+          {showPopup && (
+            <div>
+              <p>
+                신청이 완료되었습니다. 예상 수당:{" "}
+                {estimatedPay.toLocaleString()}원
+              </p>
+              <BlueButton onClick={() => setShowPopup(false)}>닫기</BlueButton>
+            </div>
+          )}
+        </CorrectionFields>
+      </Form>
     </Container>
   );
 };

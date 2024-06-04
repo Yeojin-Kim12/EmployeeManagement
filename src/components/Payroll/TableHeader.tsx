@@ -5,6 +5,7 @@ const Th = styled.th`
   border: 1px solid #dcdcdc;
   padding: 10px;
   background-color: #f0f0f0;
+  font-weight: 500;
 `;
 
 interface TableHeaderProps {

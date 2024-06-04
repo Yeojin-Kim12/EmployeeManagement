@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useRequest } from "../hooks/useRequest";
 import TableHeader from "../components/Payroll/TableHeader";
+import { BlueButtonSml } from "../GlobalStyles";
 
 const Container = styled.div`
   padding: 20px;
@@ -11,21 +12,15 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
 `;
-
 const Td = styled.td`
   border: 1px solid #dcdcdc;
   padding: 10px;
+  text-align: center;
+  font-weight: 400;
 `;
-
-const Button = styled.button`
-  background-color: #3565f6;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #274bcf;
-  }
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-evenly;
 `;
 
 const RequestManagement: React.FC = () => {
@@ -46,7 +41,7 @@ const RequestManagement: React.FC = () => {
 
   return (
     <Container>
-      <h2>신청 내역 관리</h2>
+      <h3>신청 내역 관리</h3>
       <Table>
         <TableHeader columns={columns} />
         <tbody>
@@ -66,13 +61,21 @@ const RequestManagement: React.FC = () => {
               </Td>
               <Td>{request.status}</Td>
               <Td>
-                <Button onClick={() => handleUpdateStatus(request.id, "승인")}>
-                  승인
-                </Button>
-                <Button onClick={() => handleUpdateStatus(request.id, "반려")}>
-                  반려
-                </Button>
-                <Button onClick={() => handleDelete(request.id)}>삭제</Button>
+                <ButtonContainer>
+                  <BlueButtonSml
+                    onClick={() => handleUpdateStatus(request.id, "승인")}
+                  >
+                    승인
+                  </BlueButtonSml>
+                  <BlueButtonSml
+                    onClick={() => handleUpdateStatus(request.id, "반려")}
+                  >
+                    반려
+                  </BlueButtonSml>
+                  <BlueButtonSml onClick={() => handleDelete(request.id)}>
+                    삭제
+                  </BlueButtonSml>
+                </ButtonContainer>
               </Td>
             </tr>
           ))}

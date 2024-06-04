@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <TitleLink to="/">PLATFORM</TitleLink>
+      <TitleLink to="/">EMS</TitleLink>
       <Nav>
         <ul>
           {items.map((item) => (
@@ -50,10 +50,20 @@ const Nav = styled.nav`
   }
 `;
 const TitleLink = styled(Link)`
-  color: #3565f6;
+  color: var(--color-blue);
   font-size: 27px;
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+    background: url("/apps_24dp_FILL0_wght400_GRAD0_opsz24.svg") no-repeat
+      center center;
+  }
 `;
 const Navli = styled.li`
   margin-left: 10px;
@@ -61,5 +71,7 @@ const Navli = styled.li`
 const NavLink = styled(Link)<{ $isActive: boolean }>`
   color: ${(props) => (props.$isActive ? "#161616" : "#8b8b8b")};
   text-decoration: none;
+  padding: 5px;
   font-size: 16px;
+  font-weight: 500;
 `;

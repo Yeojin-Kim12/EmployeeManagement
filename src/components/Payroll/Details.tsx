@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { BlueButton } from "../../GlobalStyles";
 import { calculateNewSalary, generateSamplePayroll } from "../../utils/payroll";
 
 const Table = styled.table`
@@ -11,22 +12,17 @@ const Th = styled.th`
   border: 1px solid #dcdcdc;
   padding: 10px;
   background-color: #f0f0f0;
+  text-align: left;
+  font-weight: 500;
 `;
 
 const Td = styled.td`
   border: 1px solid #dcdcdc;
   padding: 10px;
+  text-align: left;
+  font-weight: 400;
 `;
-const Button = styled.button`
-  background-color: #3565f6;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #274bcf;
-  }
-`;
+
 const sampleEmployee = {
   name: "김패캠",
   department: "개발부",
@@ -45,20 +41,6 @@ const Detail = () => {
     setVisibleMonths((prev) => prev + 3);
   };
   const visiblePayroll = samplePayroll.slice(0, visibleMonths);
-
-  // useEffect(() => {
-  //   const fetchRequests = async () => {
-  //     const querySnapshot = await getDocs(collection(db, "users"));
-  //     const requestData = querySnapshot.docs.map((doc) => ({
-  //       ...doc.data(),
-  //       userId: doc.id,
-  //     }));
-  //     setUser(requestData);
-  //   };
-
-  //   fetchRequests();
-  //   console.log(user);
-  // }, []);
 
   return (
     <>
@@ -83,7 +65,7 @@ const Detail = () => {
         </tbody>
       </Table>
       {visibleMonths < samplePayroll.length && (
-        <Button onClick={handleShowMore}>더보기</Button>
+        <BlueButton onClick={handleShowMore}>더보기</BlueButton>
       )}
     </>
   );

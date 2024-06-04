@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useRequest } from "../hooks/useRequest";
 import TableHeader from "../components/Payroll/TableHeader";
+import { BlueButtonSml } from "../GlobalStyles";
 
 const Container = styled.div`
   padding: 20px;
@@ -15,17 +16,8 @@ const Table = styled.table`
 const Td = styled.td`
   border: 1px solid #dcdcdc;
   padding: 10px;
-`;
-
-const Button = styled.button`
-  background-color: #3565f6;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #274bcf;
-  }
+  text-align: center;
+  font-weight: 400;
 `;
 
 const RequestConfirmation: React.FC = () => {
@@ -46,7 +38,7 @@ const RequestConfirmation: React.FC = () => {
 
   return (
     <Container>
-      <h2>신청 내역 확인</h2>
+      <h3>신청 내역 확인</h3>
       <Table>
         <TableHeader columns={columns} />
         <tbody>
@@ -66,7 +58,9 @@ const RequestConfirmation: React.FC = () => {
               </Td>
               <Td>{request.status}</Td>
               <Td>
-                <Button onClick={() => handleDelete(request.id)}>삭제</Button>
+                <BlueButtonSml onClick={() => handleDelete(request.id)}>
+                  삭제
+                </BlueButtonSml>
               </Td>
             </tr>
           ))}
