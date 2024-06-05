@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import ProfileImage from "../components/Profile/ProfileImage";
 import ProfileInfo from "../components/Profile/ProfileInfo";
+import { useEffect
 
+ } from "react";
 const ProfileContainer = styled.div`
   margin: 0 auto;
   display: flex;
@@ -12,6 +14,10 @@ const ProfileContainer = styled.div`
 `;
 
 const Profile = () => {
+  useEffect(() => {
+    console.log('open profile page')
+  }, []);
+
   return (
     <ProfileContainer>
       <ProfileImage />
