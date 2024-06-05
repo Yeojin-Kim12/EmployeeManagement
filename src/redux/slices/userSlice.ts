@@ -14,6 +14,22 @@ const initialState: UserState = {
   error: null,
 };
 
+const handlePending = (state: UserState) => {
+  state.loading = true;
+  state.error = null;
+};
+
+const handleFulfilled = (state: UserState, action: any) => {
+  state.loading = false;
+  state.userInfo = action.payload;
+};
+
+const handleRejected = (state: UserState, action: any) => {
+  state.loading = false;
+  state.error = action.payload as string;
+};
+
+
 // 유저 정보 업로드
 export const uploadUserInfo = createAsyncThunk(
   'user/uploadUserInfo',
@@ -65,43 +81,17 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(uploadUserInfo.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(uploadUserInfo.fulfilled, (state, action) => {
-        state.loading = false;
-        state.userInfo = action.payload;
-      })
-      .addCase(uploadUserInfo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(updateUserInfo.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateUserInfo.fulfilled, (state, action) => {
-        state.loading = false;
-        state.userInfo = { ...state.userInfo, ...action.payload };
-      })
-      .addCase(updateUserInfo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(fetchUserInfo.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUserInfo.fulfilled, (state, action) => {
-        state.loading = false;
-        state.userInfo = action.payload;
-      })
-      .addCase(fetchUserInfo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      });
+    .addCase(uploadUserInfo.pending, handlePending)
+    .addCase(uploadUserInfo.fulfilled, handleFulfilled)
+    .addCase(uploadUserInfo.rejected, handleRejected)
+    .addCase(updateUserInfo.pending, handlePending)
+    .addCase(updateUserInfo.fulfilled, handleFulfilled)
+    .addCase(updateUserInfo.rejected, handleRejected)
+    .addCase(fetchUserInfo.pending, handlePending)
+    .addCase(fetchUserInfo.fulfilled, handleFulfilled)
+    .addCase(fetchUserInfo.rejected, handleRejected)
   },
 });
 
 export default userSlice.reducer;
+

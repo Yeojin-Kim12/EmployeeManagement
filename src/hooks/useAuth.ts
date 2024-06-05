@@ -4,7 +4,7 @@ import { auth, db } from '../firebase';
 import { setUser, clearUser } from '../redux/slices/authSlice';
 import { RootState } from '../redux/store';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 
 interface UserData {
   email: string,
@@ -18,6 +18,7 @@ interface UserData {
 export const useAuth = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+  const [error, setError] = useState<string | null>(null);
 
   const persistUser = async (userData: UserData) => {
     const userDoc = doc(db, 'users', userData.email);
@@ -32,36 +33,56 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const userData: UserData = {
-      email: userCredential.user.email
-    } as UserData;
-    await persistUser(userData);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userData: UserData = {
+        email: userCredential.user.email
+      } as UserData;
+      await persistUser(userData);
+      setError(null);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    const userCredential = await signInWithPopup(auth, provider);
-    const userData: UserData = {
-      email: userCredential.user.email,
-      displayName: userCredential.user.displayName,
-      photoURL: userCredential.user.photoURL
-    } as UserData;
-    await persistUser(userData);
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const userData: UserData = {
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        photoURL: userCredential.user.photoURL
+      } as UserData;
+      await persistUser(userData);
+      setError(null);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   const register = async (email: string, password: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const userData: UserData = {
-      email: userCredential.user.email
-    } as UserData;
-    await persistUser(userData);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userData: UserData = {
+        email: userCredential.user.email
+      } as UserData;
+      await persistUser(userData);
+      setError(null);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   const signOutUser = async () => {
-    await signOut(auth);
-    localStorage.removeItem('user');
-    dispatch(clearUser());
+    try {
+      await signOut(auth);
+      localStorage.removeItem('user');
+      dispatch(clearUser());
+      setError(null);
+    } catch (error: any) {
+      setError(error.message);
+    }
   };
 
   const loadUserFromLocalStorage = useCallback(() => {
@@ -83,5 +104,6 @@ export const useAuth = () => {
     register,
     signOutUser,
     loadUserFromLocalStorage,
+    error,
   };
 };

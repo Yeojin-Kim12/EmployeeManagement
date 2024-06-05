@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useUser } from '../../hooks/useUser';
 import { useAuth } from "../../hooks/useAuth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 const ProfileImageContainer = styled.div`
   display: flex;
@@ -90,14 +91,14 @@ const ProfileImage = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <ProfileImageContainer><LoadingSpinner/></ProfileImageContainer>;
   if (error) return <p>Error: {error}</p>;
   if (!userInfo) return <p>유저 정보를 불러오지 못했습니다.</p>;
 
   return (
     <ProfileImageContainer>
       <ImageWrapper>
-        <Image src={userInfo?.photoURL || '디폴트이미지'} alt="Profile" />
+        <Image src={userInfo?.photoURL || '디폴트이미지'}alt="Profile" />
       </ImageWrapper>
       <EditButton
         onClick={handleEditButtonClick}
