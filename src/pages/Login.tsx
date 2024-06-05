@@ -1,14 +1,6 @@
-// src/Login.tsx
-import React, { useState, useEffect } from "react";
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-} from "firebase/auth";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { auth, provider } from "../firebase";
+import { useAuth } from "../hooks/useAuth";
 
 const Container = styled.div`
   background-color: #fff;
@@ -39,22 +31,11 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  const { user, signIn, signInWithGoogle, register, signOutUser } = useAuth();
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signIn(email, password);
       alert("로그인되었습니다");
     } catch (error) {
       alert("아이디나 비번이 틀립니다");
@@ -67,7 +48,7 @@ const Login: React.FC = () => {
       return;
     }
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await register(email, password);
       alert("회원가입이 완료되었습니다");
     } catch (error) {
       alert("회원가입에 실패했습니다");
@@ -76,7 +57,7 @@ const Login: React.FC = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      await signInWithGoogle();
       alert("로그인되었습니다");
     } catch (error) {
       alert("Google 로그인에 실패했습니다");
@@ -85,7 +66,7 @@ const Login: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOutUser();
       setEmail("");
       setPassword("");
       setConfirmPassword("");

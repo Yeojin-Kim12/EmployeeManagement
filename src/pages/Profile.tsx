@@ -1,11 +1,9 @@
-//중앙정렬
-//flex
-//좌측에 프로필이미지
-//우측에 프로필인포
 import styled from "styled-components";
 import ProfileImage from "../components/Profile/ProfileImage";
 import ProfileInfo from "../components/Profile/ProfileInfo";
+import { useEffect
 
+ } from "react";
 const ProfileContainer = styled.div`
   margin: 0 auto;
   display: flex;
@@ -16,12 +14,16 @@ const ProfileContainer = styled.div`
 `;
 
 const Profile = () => {
+  useEffect(() => {
+    console.log('open profile page')
+  }, []);
+
   return (
     <ProfileContainer>
-      <ProfileImage/>
-      <ProfileInfo/>
+      <ProfileImage />
+      <ProfileInfo />
     </ProfileContainer>
-  )
+  );
 }
 
-export default Profile
+export default Profile;
