@@ -1,21 +1,7 @@
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { ChangeEvent, useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import styled from "styled-components";
-import { db } from "../../firebase";
-
-interface CalendarModalProps {
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedDate: Date | null;
-  selectedSchedule: Schedule | null;
-}
-
-interface Schedule {
-  id: string;
-  type: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-}
+import useCalendar from "../../hooks/useCalendar";
+import { Schedule } from "../../redux/slices/calendarSlice";
 
 const colorPalette: string[] = ["#d44244", "#fccb05", "#69b054", "#4d7adf", "#b093e6"];
 
@@ -25,68 +11,55 @@ const formatDate = (date: Date): string => {
   return localDate.toISOString().substring(0, 16);
 };
 
-const CalendarModal = ({ setIsModalOpen, selectedDate, selectedSchedule }: CalendarModalProps) => {
+const CalendarModal = () => {
+  const { selectedDate, selectedSchedule, createSchedule, editSchedule, removeSchedule, closeModal } = useCalendar();
   const [type, setType] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [color, setColor] = useState<string>("");
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    if (selectedSchedule) {
+    if (!isLoaded && selectedSchedule) {
       setType(selectedSchedule.type);
-      setStartDate(formatDate(new Date(selectedSchedule.startDate)));
-      setEndDate(formatDate(new Date(selectedSchedule.endDate)));
+      setStartDate(selectedSchedule.startDate);
+      setEndDate(selectedSchedule.endDate);
       setColor(selectedSchedule.color);
-    } else if (selectedDate) {
-      setStartDate(formatDate(selectedDate));
-      setEndDate(formatDate(selectedDate));
+    } else if (!isLoaded && selectedDate) {
+      const formattedDate = formatDate(selectedDate);
+      setStartDate(formattedDate);
+      setEndDate(formattedDate);
     }
-  }, [selectedDate, selectedSchedule]);
+    setIsLoaded(true);
+  }, [selectedDate, selectedSchedule, isLoaded]);
 
-  const handleSubmit = async () => {
-    try {
-      if (type !== "" && startDate !== "" && endDate !== "" && color !== "") {
-        const data = {
-          type: type,
-          startDate: startDate,
-          endDate: endDate,
-          color: color,
-        };
-        if (selectedSchedule) {
-          await updateDoc(doc(db, "schedule", selectedSchedule.id), data);
-        } else {
-          await addDoc(collection(db, "schedule"), data);
-        }
-        alert("등록되었습니다.");
-        setIsModalOpen(false);
-      } else {
-        alert("모두 입력해주세요");
-      }
-    } catch (error) {
-      console.error(error);
+  const handleSubmit = () => {
+    if (type === "" || startDate === "" || endDate === "" || color === "") {
+      alert("모두 입력해주세요.");
+      return;
     }
+    const schedule: Schedule = { id: selectedSchedule ? selectedSchedule.id : "", type, startDate, endDate, color };
+    if (selectedSchedule) {
+      editSchedule(schedule);
+    } else {
+      createSchedule(schedule);
+    }
+    alert("등록되었습니다.");
+    closeModal();
   };
 
-  const handleDelete = async () => {
-    try {
-      if (selectedSchedule) {
-        await deleteDoc(doc(db, "schedule", selectedSchedule.id));
-        alert("삭제되었습니다.");
-        setIsModalOpen(false);
-      }
-    } catch (error) {
-      console.error(error);
+  const handleDelete = () => {
+    if (selectedSchedule && selectedSchedule.id) {
+      removeSchedule(selectedSchedule.id);
+      alert("삭제되었습니다.");
+      closeModal();
     }
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
   };
 
   return (
     <ModalContainer>
       <ModalContent>
-        <h1>일정</h1>
+        <h1>Schedule</h1>
         <ModalBody>
           <GroupDiv>
             <Label>제목</Label>

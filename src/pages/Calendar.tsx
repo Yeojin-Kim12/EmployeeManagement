@@ -1,66 +1,24 @@
-import { useState, useEffect } from "react";
 import styled from "styled-components";
-import CalendarModal from "../components/Calendar/CalendarModal";
+import useCalendar from "../hooks/useCalendar";
+import { useDispatch } from "react-redux";
+import { Schedule, setCurrentDate } from "../redux/slices/calendarSlice";
 import CalendarDays from "../components/Calendar/CalendarDays";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase";
+import CalendarModal from "../components/Calendar/CalendarModal";
 
 const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
 
-interface Schedule {
-  id: string;
-  type: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-}
-
 const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  const dispatch = useDispatch();
+  const { currentDate, isModalOpen, schedules, openModal, goToPrevMonth, goToNextMonth, goToToday } = useCalendar();
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const today = new Date();
-
-  useEffect(() => {
-    const unsub = onSnapshot(collection(db, "schedule"), (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Schedule[];
-      setSchedules(data);
-    });
-
-    return () => unsub();
-  }, []);
-
-  const goToPrevMonth = () => {
-    setCurrentDate(new Date(year, month - 1, 1));
-  };
-
-  const goToNextMonth = () => {
-    setCurrentDate(new Date(year, month + 1, 1));
-  };
-
-  const goToToday = () => {
-    setCurrentDate(today);
-  };
-
-  const openModal = (date: Date, schedule: Schedule | null = null) => {
-    setSelectedDate(date);
-    setSelectedSchedule(schedule);
-    setIsModalOpen(true);
-  };
 
   const handleDayClick = (date: Date, isCurrentMonth: boolean) => {
     if (isCurrentMonth) {
       openModal(date);
     } else {
-      setCurrentDate(date);
+      dispatch(setCurrentDate(date.toISOString()));
     }
   };
 
@@ -88,7 +46,7 @@ const Calendar = () => {
         </Week>
         <CalendarDays year={year} month={month} schedules={schedules} handleScheduleClick={handleScheduleClick} handleDayClick={handleDayClick} />
       </CalendarContainer>
-      {isModalOpen && <CalendarModal setIsModalOpen={setIsModalOpen} selectedDate={selectedDate} selectedSchedule={selectedSchedule} />}
+      {isModalOpen && <CalendarModal />}
     </>
   );
 };

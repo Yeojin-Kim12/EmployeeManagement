@@ -1,68 +1,75 @@
-// src/hooks/useCalendar.ts
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../redux/store";
-import { fetchCalendar, uploadCalendar, updateCalendar, deleteCalendar, closeModal as closeCalendarModal } from "../redux/slices/calendarSlice";
-import { useEffect, useState } from "react";
-import { Calendar } from "../redux/slices/calendarSlice";
+import { fetchSchedules, addSchedule, updateSchedule, deleteSchedule, setCurrentDate, setIsModalOpen, setSelectedDate, setSelectedSchedule, Schedule } from "../redux/slices/calendarSlice";
+import { useEffect } from "react";
+import { useAuth } from "./useAuth";
 
-export const useCalendar = () => {
+const useCalendar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { calendar, loading, error } = useSelector((state: RootState) => state.calendar);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<Calendar | null>(null);
+  const { user } = useAuth();
+  const { currentDate, isModalOpen, selectedDate, selectedSchedule, schedules, loading } = useSelector((state: RootState) => state.calendar);
 
   useEffect(() => {
-    dispatch(fetchCalendar());
-  }, [dispatch]);
-
-  const openModal = (date: Date, schedule: Calendar | null = null) => {
-    setSelectedDate(date);
-    setSelectedSchedule(schedule);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedDate(null);
-    setSelectedSchedule(null);
-    dispatch(closeCalendarModal());
-  };
-
-  const handleScheduleClick = (schedule: Calendar) => {
-    openModal(new Date(schedule.startDate), schedule);
-  };
-
-  const handleDayClick = (date: Date, isCurrentMonth: boolean) => {
-    if (isCurrentMonth) {
-      openModal(date);
+    if (user?.email) {
+      dispatch(fetchSchedules(user.email));
     }
-  };
+  }, [dispatch, user]);
 
-  const addOrUpdateSchedule = async (schedule: Omit<Calendar, "id"> | Calendar) => {
-    if ("id" in schedule) {
-      dispatch(updateCalendar(schedule));
-    } else {
-      dispatch(uploadCalendar(schedule));
+  useEffect(() => {
+    if (selectedSchedule === null && selectedDate !== null) {
+      dispatch(setSelectedDate(null));
     }
-  };
+  }, [selectedDate, selectedSchedule, dispatch]);
 
-  const removeSchedule = async (id: string) => {
-    dispatch(deleteCalendar(id));
-  };
+  useEffect(() => {
+    if (selectedDate === null && selectedSchedule !== null) {
+      dispatch(setSelectedSchedule(null));
+    }
+  }, [selectedDate, selectedSchedule, dispatch]);
 
   return {
-    calendar,
-    loading,
-    error,
-    selectedDate,
+    currentDate: new Date(currentDate),
     isModalOpen,
+    selectedDate: selectedDate ? new Date(selectedDate) : null,
     selectedSchedule,
-    openModal,
-    closeModal,
-    handleScheduleClick,
-    handleDayClick,
-    addOrUpdateSchedule,
-    removeSchedule,
+    schedules,
+    loading,
+    openModal: (date: Date, schedule: Schedule | null = null) => {
+      dispatch(setSelectedDate(date.toISOString()));
+      dispatch(setSelectedSchedule(schedule));
+      dispatch(setIsModalOpen(true));
+    },
+    closeModal: () => {
+      dispatch(setIsModalOpen(false));
+      dispatch(setSelectedSchedule(null));
+    },
+    createSchedule: (schedule: Omit<Schedule, "id">) => {
+      if (user?.email) {
+        dispatch(addSchedule({ userId: user.email, schedule }));
+      }
+    },
+    editSchedule: (schedule: Schedule) => {
+      if (user?.email) {
+        dispatch(updateSchedule({ userId: user.email, schedule }));
+      }
+    },
+    removeSchedule: (id: string) => {
+      if (user?.email) {
+        dispatch(deleteSchedule({ userId: user.email, id }));
+      }
+    },
+    goToPrevMonth: () => {
+      const prevMonth = new Date(new Date(currentDate).setMonth(new Date(currentDate).getMonth() - 1));
+      dispatch(setCurrentDate(prevMonth.toISOString()));
+    },
+    goToNextMonth: () => {
+      const nextMonth = new Date(new Date(currentDate).setMonth(new Date(currentDate).getMonth() + 1));
+      dispatch(setCurrentDate(nextMonth.toISOString()));
+    },
+    goToToday: () => {
+      dispatch(setCurrentDate(new Date().toISOString()));
+    },
   };
 };
+
+export default useCalendar;

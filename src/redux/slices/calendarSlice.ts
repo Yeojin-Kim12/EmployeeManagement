@@ -1,9 +1,8 @@
-// src/features/calendar/calendarSlice.ts
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query } from "firebase/firestore";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, DocumentData, QuerySnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
 
-export interface Calendar {
+export interface Schedule {
   id: string;
   type: string;
   startDate: string;
@@ -12,121 +11,93 @@ export interface Calendar {
 }
 
 interface CalendarState {
-  calendar: Calendar[];
-  selectedDate: Date | null;
-  selectedSchedule: Calendar | null;
+  currentDate: string;
+  isModalOpen: boolean;
+  selectedDate: string | null;
+  selectedSchedule: Schedule | null;
+  schedules: Schedule[];
   loading: boolean;
-  error: string | null;
 }
 
 const initialState: CalendarState = {
-  calendar: [],
+  currentDate: new Date().toISOString(),
+  isModalOpen: false,
   selectedDate: null,
   selectedSchedule: null,
+  schedules: [],
   loading: false,
-  error: null,
 };
 
-export const fetchCalendar = createAsyncThunk<Calendar[], void>("calendar/fetchCalendar", async (_, { rejectWithValue }) => {
-  try {
-    const q = query(collection(db, "schedule"));
-    const querySnapshot = await getDocs(q);
-    const calendar = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Calendar[];
-    return calendar;
-  } catch (error: any) {
-    return rejectWithValue(error.message);
-  }
+export const fetchSchedules = createAsyncThunk("calendar/fetchSchedules", async (userId: string) => {
+  const snapshot = await new Promise<QuerySnapshot<DocumentData>>((resolve) => onSnapshot(collection(db, `users/${userId}/schedule`), resolve));
+  const data = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    type: doc.data().type,
+    startDate: doc.data().startDate,
+    endDate: doc.data().endDate,
+    color: doc.data().color,
+  })) as Schedule[];
+  return data;
 });
 
-export const uploadCalendar = createAsyncThunk<Calendar, Omit<Calendar, "id">>("calendar/uploadCalendar", async (schedule: Omit<Calendar, "id">, { rejectWithValue }) => {
-  try {
-    const docRef = await addDoc(collection(db, "schedule"), schedule);
-    return { id: docRef.id, ...schedule };
-  } catch (error: any) {
-    return rejectWithValue(error.message);
-  }
+export const addSchedule = createAsyncThunk("calendar/addSchedule", async ({ userId, schedule }: { userId: string; schedule: Omit<Schedule, "id"> }, { dispatch }) => {
+  const docRef = await addDoc(collection(db, `users/${userId}/schedule`), schedule as DocumentData);
+  const newSchedule = { id: docRef.id, ...schedule };
+  await updateDoc(doc(db, `users/${userId}/schedule`, docRef.id), { id: docRef.id });
+  dispatch(fetchSchedules(userId));
+  return newSchedule;
 });
 
-export const updateCalendar = createAsyncThunk<Calendar, Calendar>("calendar/updateCalendar", async (schedule: Calendar, { rejectWithValue }) => {
-  try {
-    await updateDoc(doc(db, "schedule", schedule.id), {
-      type: schedule.type,
-      startDate: schedule.startDate,
-      endDate: schedule.endDate,
-      color: schedule.color,
-    });
-    return schedule;
-  } catch (error: any) {
-    return rejectWithValue(error.message);
-  }
+export const updateSchedule = createAsyncThunk("calendar/updateSchedule", async ({ userId, schedule }: { userId: string; schedule: Schedule }) => {
+  await updateDoc(doc(db, `users/${userId}/schedule`, schedule.id), schedule as Partial<Schedule>);
+  return schedule;
 });
 
-export const deleteCalendar = createAsyncThunk<string, string>("calendar/deleteCalendar", async (id: string, { rejectWithValue }) => {
-  try {
-    await deleteDoc(doc(db, "schedule", id));
-    return id;
-  } catch (error: any) {
-    return rejectWithValue(error.message);
-  }
+export const deleteSchedule = createAsyncThunk("calendar/deleteSchedule", async ({ userId, id }: { userId: string; id: string }) => {
+  await deleteDoc(doc(db, `users/${userId}/schedule`, id));
+  return id;
 });
-
-const handlePending = (state: CalendarState) => {
-  state.loading = true;
-  state.error = null;
-};
-
-const handleFulfilled = (state: CalendarState, action: any, key: "calendar") => {
-  state.loading = false;
-  if (key === "calendar") {
-    state.calendar = action.payload;
-  }
-};
-
-const handleRejected = (state: CalendarState, action: any) => {
-  state.loading = false;
-  state.error = action.payload as string;
-};
 
 const calendarSlice = createSlice({
   name: "calendar",
   initialState,
   reducers: {
-    closeModal: (state) => {
-      state.selectedDate = null;
-      state.selectedSchedule = null;
+    setCurrentDate(state, action: PayloadAction<string>) {
+      state.currentDate = action.payload;
+    },
+    setIsModalOpen(state, action: PayloadAction<boolean>) {
+      state.isModalOpen = action.payload;
+    },
+    setSelectedDate(state, action: PayloadAction<string | null>) {
+      state.selectedDate = action.payload;
+    },
+    setSelectedSchedule(state, action: PayloadAction<Schedule | null>) {
+      state.selectedSchedule = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCalendar.pending, handlePending)
-      .addCase(fetchCalendar.fulfilled, (state, action) => handleFulfilled(state, action, "calendar"))
-      .addCase(fetchCalendar.rejected, handleRejected)
-      .addCase(uploadCalendar.pending, handlePending)
-      .addCase(uploadCalendar.fulfilled, (state, action) => {
-        state.loading = false;
-        state.calendar.push(action.payload);
+      .addCase(fetchSchedules.pending, (state) => {
+        state.loading = true;
       })
-      .addCase(uploadCalendar.rejected, handleRejected)
-      .addCase(updateCalendar.pending, handlePending)
-      .addCase(updateCalendar.fulfilled, (state, action) => {
+      .addCase(fetchSchedules.fulfilled, (state, action) => {
+        state.schedules = action.payload;
         state.loading = false;
-        const index = state.calendar.findIndex((schedule) => schedule.id === action.payload.id);
+      })
+      .addCase(addSchedule.fulfilled, (state, action) => {
+        state.schedules.push(action.payload);
+      })
+      .addCase(updateSchedule.fulfilled, (state, action) => {
+        const index = state.schedules.findIndex((schedule) => schedule.id === action.payload.id);
         if (index !== -1) {
-          state.calendar[index] = action.payload;
+          state.schedules[index] = action.payload;
         }
       })
-      .addCase(updateCalendar.rejected, handleRejected)
-      .addCase(deleteCalendar.pending, handlePending)
-      .addCase(deleteCalendar.fulfilled, (state, action) => {
-        state.loading = false;
-        state.calendar = state.calendar.filter((schedule) => schedule.id !== action.payload);
-      })
-      .addCase(deleteCalendar.rejected, handleRejected);
+      .addCase(deleteSchedule.fulfilled, (state, action) => {
+        state.schedules = state.schedules.filter((schedule) => schedule.id !== action.payload);
+      });
   },
 });
 
-export const { closeModal } = calendarSlice.actions;
+export const { setCurrentDate, setIsModalOpen, setSelectedDate, setSelectedSchedule } = calendarSlice.actions;
 export default calendarSlice.reducer;

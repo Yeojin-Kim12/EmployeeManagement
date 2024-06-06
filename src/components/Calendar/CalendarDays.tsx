@@ -1,12 +1,5 @@
 import styled from "styled-components";
-
-interface Schedule {
-  id: string;
-  type: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-}
+import { Schedule } from "../../redux/slices/calendarSlice";
 
 interface CalendarDaysProps {
   year: number;
@@ -52,7 +45,8 @@ const CalendarDays = ({ year, month, schedules, handleScheduleClick, handleDayCl
   };
 
   const sortSchedules = (schedules: Schedule[]) => {
-    return schedules.sort((a, b) => {
+    const sortedSchedules = [...schedules];
+    return sortedSchedules.sort((a, b) => {
       const lengthA = new Date(a.endDate).getTime() - new Date(a.startDate).getTime();
       const lengthB = new Date(b.endDate).getTime() - new Date(b.startDate).getTime();
       return lengthB - lengthA;
@@ -62,21 +56,19 @@ const CalendarDays = ({ year, month, schedules, handleScheduleClick, handleDayCl
   const isSameDay = (d1: Date, d2: Date) => d1.toDateString() === d2.toDateString();
 
   const topPositions = (schedules: Schedule[]) => {
-    const absoluteTop: { [key: string]: number } = {}; // 일정의 top 위치 저장
-    const dateTop: { [date: string]: number[] } = {}; // 날짜별 top 위치 저장
+    const absoluteTop: { [key: string]: number } = {};
+    const dateTop: { [date: string]: number[] } = {};
 
     schedules.forEach((schedule) => {
       const startDate = new Date(schedule.startDate);
       const endDate = new Date(schedule.endDate);
       let topPosition = 0;
 
-      // 겹치는 일정 확인 후 top 위치 할당
       for (let a = new Date(startDate); a <= endDate; a.setDate(a.getDate() + 1)) {
         const dateKey = a.toDateString();
         if (!dateTop[dateKey]) {
           dateTop[dateKey] = [];
         }
-        // 할당된 top위치가 있으면 +25px
         while (dateTop[dateKey].includes(topPosition)) {
           topPosition += 25;
         }
