@@ -1,13 +1,15 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import userReducer from './slices/userSlice';
-import workReducer from './slices/workSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice";
+import userReducer from "./slices/userSlice";
+import workReducer from "./slices/workSlice";
+import calendarReducer from "./slices/calendarSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     user: userReducer,
     work: workReducer,
+    calendar: calendarReducer,
   },
 });
 
