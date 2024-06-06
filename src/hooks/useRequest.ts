@@ -42,8 +42,16 @@ export function useRequest(): UseRequestReturn {
     fetchRequests();
   }, []);
 
+  // const handleUpdateStatus = async (id: string, status: string) => {
+  //   const requestDoc = doc(db, "corrections", id);
+  //   await updateDoc(requestDoc, { status });
+  //   setRequests((prevRequests) =>
+  //     prevRequests.map((req) => (req.id === id ? { ...req, status } : req))
+  //   );
+  // };
+
   const handleUpdateStatus = async (id: string, status: string) => {
-    const requestDoc = doc(db, "corrections", id);
+    const requestDoc = doc(db, "workRecords", id);
     await updateDoc(requestDoc, { status });
     setRequests((prevRequests) =>
       prevRequests.map((req) => (req.id === id ? { ...req, status } : req))

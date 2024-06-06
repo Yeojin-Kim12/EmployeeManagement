@@ -1,11 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useWork } from "../hooks/useWork";
-import { useDispatch } from "react-redux";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { fetchWorkRecords, updateWorkRecord } from "../redux/slices/workSlice";
-import { AppDispatch } from "../redux/store";
+import { useRequest } from "../hooks/useRequest";
 import TableHeader from "../components/Payroll/TableHeader";
 import { BlueButtonSml } from "../GlobalStyles";
 
@@ -29,39 +24,7 @@ const ButtonContainer = styled.div`
 `;
 
 const RequestManagement: React.FC = () => {
-  const { workRecords, loading, error } = useWork();
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(fetchWorkRecords());
-  }, [dispatch]);
-
-  useEffect(() => {
-    console.log("workRecords:", workRecords);
-  }, [workRecords]); // 이펙트를 workRecords가 변경될 때마다 실행되도록 설정
-
-  const handleUpdateStatus = async (id: string, status: string) => {
-    try {
-      const requestDoc = doc(db, "workRecords", id);
-      await updateDoc(requestDoc, { status });
-      await dispatch(updateWorkRecord({ id, status }));
-    } catch (error) {
-      console.error("Error updating work record:", error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, "workRecords", id));
-    dispatch(fetchWorkRecords());
-  };
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  const { requests, handleUpdateStatus, handleDelete } = useRequest();
 
   const columns = [
     "신청 유형",
@@ -82,7 +45,7 @@ const RequestManagement: React.FC = () => {
       <Table>
         <TableHeader columns={columns} />
         <tbody>
-          {workRecords.map((request) => (
+          {requests.map((request) => (
             <tr key={request.id}>
               <Td>{request.type}</Td>
               <Td>{request.startDate || "N/A"}</Td>

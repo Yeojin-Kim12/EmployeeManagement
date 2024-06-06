@@ -1,11 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useWork } from "../hooks/useWork";
-import { useDispatch } from "react-redux";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../firebase";
-import { fetchWorkRecords } from "../redux/slices/workSlice";
-import { AppDispatch } from "../redux/store";
+import { useRequest } from "../hooks/useRequest";
 import TableHeader from "../components/Payroll/TableHeader";
 import { BlueButtonSml } from "../GlobalStyles";
 
@@ -26,29 +21,7 @@ const Td = styled.td`
 `;
 
 const RequestConfirmation: React.FC = () => {
-  const { workRecords, loading, error } = useWork();
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(fetchWorkRecords());
-  }, [dispatch]);
-
-  useEffect(() => {
-    console.log("workRecords:", workRecords);
-  }, [workRecords]); // 이펙트를 workRecords가 변경될 때마다 실행되도록 설정
-
-  const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, "workRecords", id));
-    dispatch(fetchWorkRecords());
-  };
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  const { requests, handleDelete } = useRequest();
 
   const columns = [
     "신청 유형",
@@ -69,7 +42,7 @@ const RequestConfirmation: React.FC = () => {
       <Table>
         <TableHeader columns={columns} />
         <tbody>
-          {workRecords.map((request) => (
+          {requests.map((request) => (
             <tr key={request.id}>
               <Td>{request.type}</Td>
               <Td>{request.startDate || "N/A"}</Td>

@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { BlueButton } from "../GlobalStyles";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store"; // AppDispatch를 가져옵니다.
-import { uploadWorkRecord } from "../redux/slices/workSlice";
-import { useWork } from "../hooks/useWork";
+import { db } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 const Container = styled.div`
   width: 800px;
@@ -48,8 +46,6 @@ const TextArea = styled.textarea`
 `;
 
 const CorrectionRequest: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>(); // useDispatch에 AppDispatch 타입을 지정합니다.
-  const { estimatedPay, calculatePay } = useWork();
   const [type, setType] = useState<"연장근무" | "무급휴가" | "휴일근무">(
     "연장근무"
   );
@@ -61,17 +57,36 @@ const CorrectionRequest: React.FC = () => {
     additionalInfo: "",
   });
   const [showPopup, setShowPopup] = useState(false);
+  const [estimatedPay, setEstimatedPay] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const workRecord = {
+    await addDoc(collection(db, "corrections"), {
       type,
       ...details,
       status: "결제 대기",
       estimatedPay,
-    };
-    await dispatch(uploadWorkRecord(workRecord));
+    });
     setShowPopup(true);
+  };
+
+  const calculatePay = () => {
+    let pay = 0;
+    if (type === "연장근무" || type === "휴일근무") {
+      const start = new Date(`1970-01-01T${details.startTime}:00`);
+      const end = new Date(`1970-01-01T${details.endTime}:00`);
+      const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+      if (hours > 5 && type === "연장근무") {
+        alert("연장근무는 5시간을 초과할 수 없습니다.");
+        return;
+      }
+      if (hours > 48 && type === "휴일근무") {
+        alert("휴일근무는 2일을 초과할 수 없습니다.");
+        return;
+      }
+      pay = Math.floor(hours * 50000);
+    }
+    setEstimatedPay(pay);
   };
 
   return (
@@ -119,7 +134,7 @@ const CorrectionRequest: React.FC = () => {
                   onChange={(e) =>
                     setDetails({ ...details, startTime: e.target.value })
                   }
-                  onBlur={() => calculatePay(type, details)}
+                  onBlur={calculatePay}
                 />
               </label>
               <label>
@@ -130,7 +145,7 @@ const CorrectionRequest: React.FC = () => {
                   onChange={(e) =>
                     setDetails({ ...details, endTime: e.target.value })
                   }
-                  onBlur={() => calculatePay(type, details)}
+                  onBlur={calculatePay}
                 />
               </label>
             </>
@@ -161,8 +176,8 @@ const CorrectionRequest: React.FC = () => {
           {showPopup && (
             <div>
               <p>
-                신청이 완료되었습니다. 예상 수당:{estimatedPay.toLocaleString()}
-                원
+                신청이 완료되었습니다. 예상 수당:{" "}
+                {estimatedPay.toLocaleString()}원
               </p>
               <BlueButton onClick={() => setShowPopup(false)}>닫기</BlueButton>
             </div>
