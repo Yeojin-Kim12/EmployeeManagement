@@ -1,7 +1,7 @@
 // src/hooks/useWork.ts
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../redux/store';
-import { uploadWorkRecord, fetchWorkRecords, uploadSchedule, fetchSchedules } from '../redux/slices/workSlice';
+import { uploadWorkRecord, fetchWorkRecords } from '../redux/slices/workSlice';
 import { useState } from 'react';
 
 export const useWork = () => {
@@ -36,22 +36,12 @@ export const useWork = () => {
     dispatch(fetchWorkRecords());
   };
 
-  const uploadScheduleData = (schedule: any) => {
-    dispatch(uploadSchedule(schedule));
-  };
-
-  const fetchScheduleData = () => {
-    dispatch(fetchSchedules());
-  };
-
   return {
     workRecords,
     loading,
     error,
     uploadWork,
     fetchWork,
-    uploadScheduleData,
-    fetchScheduleData,
     estimatedPay,
     calculatePay,
   };

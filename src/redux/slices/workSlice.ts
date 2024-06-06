@@ -42,25 +42,6 @@ export const fetchWorkRecords = createAsyncThunk("work/fetchWorkRecords", async 
   }
 });
 
-export const uploadSchedule = createAsyncThunk("work/uploadSchedule", async (schedule: any, { rejectWithValue }) => {
-  try {
-    const docRef = await addDoc(collection(db, "schedules"), schedule);
-    return { id: docRef.id, ...schedule };
-  } catch (error: any) {
-    return rejectWithValue(error.message);
-  }
-});
-
-export const fetchSchedules = createAsyncThunk("work/fetchSchedules", async (_, { rejectWithValue }) => {
-  try {
-    const q = query(collection(db, "schedules"));
-    const querySnapshot = await getDocs(q);
-    const schedules = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    return schedules;
-  } catch (error: any) {
-    return rejectWithValue(error.message);
-  }
-});
 
 const handlePending = (state: WorkState) => {
   state.loading = true;
@@ -97,12 +78,6 @@ const workSlice = createSlice({
       .addCase(fetchWorkRecords.pending, handlePending)
       .addCase(fetchWorkRecords.fulfilled, (state, action) => handleFulfilled(state, action, "workRecords"))
       .addCase(fetchWorkRecords.rejected, handleRejected)
-      .addCase(uploadSchedule.pending, handlePending)
-      .addCase(uploadSchedule.fulfilled, (state, action) => handleFulfilled(state, action, "schedules"))
-      .addCase(uploadSchedule.rejected, handleRejected)
-      .addCase(fetchSchedules.pending, handlePending)
-      .addCase(fetchSchedules.fulfilled, (state, action) => handleFulfilled(state, action, "schedules"))
-      .addCase(fetchSchedules.rejected, handleRejected);
   },
 });
 
