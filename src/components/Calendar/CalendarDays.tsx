@@ -49,7 +49,10 @@ const CalendarDays = ({ year, month, schedules, handleScheduleClick, handleDayCl
     return sortedSchedules.sort((a, b) => {
       const lengthA = new Date(a.endDate).getTime() - new Date(a.startDate).getTime();
       const lengthB = new Date(b.endDate).getTime() - new Date(b.startDate).getTime();
-      return lengthB - lengthA;
+      if (lengthA !== lengthB) {
+        return lengthB - lengthA;
+      }
+      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
     });
   };
 
@@ -73,9 +76,8 @@ const CalendarDays = ({ year, month, schedules, handleScheduleClick, handleDayCl
           topPosition += 25;
         }
         dateTop[dateKey].push(topPosition);
+        absoluteTop[`${schedule.id}_${dateKey}`] = topPosition;
       }
-
-      absoluteTop[`${startDate.toDateString()}_${endDate.toDateString()}`] = topPosition;
     });
 
     return absoluteTop;
@@ -102,7 +104,7 @@ const CalendarDays = ({ year, month, schedules, handleScheduleClick, handleDayCl
                 const endDate = new Date(schedule.endDate);
                 const isStart = isSameDay(date, startDate);
                 const isEnd = isSameDay(date, endDate);
-                const topPosition = absoluteTop[`${startDate.toDateString()}_${endDate.toDateString()}`];
+                const topPosition = absoluteTop[`${schedule.id}_${date.toDateString()}`];
 
                 return (
                   <ScheduleBar
