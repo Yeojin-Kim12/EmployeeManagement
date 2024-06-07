@@ -1,15 +1,20 @@
 // src/hooks/useWork.ts
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../redux/store';
-import { uploadWorkRecord, fetchWorkRecords, uploadSchedule, fetchSchedules } from '../redux/slices/workSlice';
-import { useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../redux/store";
+import { uploadWorkRecord, fetchWorkRecords } from "../redux/slices/workSlice";
+import { useState } from "react";
 
 export const useWork = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { workRecords, loading, error } = useSelector((state: RootState) => state.work);
+  const { workRecords, loading, error } = useSelector(
+    (state: RootState) => state.work
+  );
   const [estimatedPay, setEstimatedPay] = useState(0);
 
-  const calculatePay = (type: "연장근무" | "무급휴가" | "휴일근무", details: any) => {
+  const calculatePay = (
+    type: "연장근무" | "무급휴가" | "휴일근무",
+    details: any
+  ) => {
     let pay = 0;
     if (type === "연장근무" || type === "휴일근무") {
       const start = new Date(`1970-01-01T${details.startTime}:00`);
@@ -36,22 +41,12 @@ export const useWork = () => {
     dispatch(fetchWorkRecords());
   };
 
-  const uploadScheduleData = (schedule: any) => {
-    dispatch(uploadSchedule(schedule));
-  };
-
-  const fetchScheduleData = () => {
-    dispatch(fetchSchedules());
-  };
-
   return {
     workRecords,
     loading,
     error,
     uploadWork,
     fetchWork,
-    uploadScheduleData,
-    fetchScheduleData,
     estimatedPay,
     calculatePay,
   };

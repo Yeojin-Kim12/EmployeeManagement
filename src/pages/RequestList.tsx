@@ -6,6 +6,8 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { fetchWorkRecords } from "../redux/slices/workSlice";
 import { AppDispatch } from "../redux/store";
+import TableHeader from "../components/Payroll/TableHeader";
+import { BlueButtonSml } from "../GlobalStyles";
 
 const Container = styled.div`
   padding: 20px;
@@ -16,26 +18,11 @@ const Table = styled.table`
   border-collapse: collapse;
 `;
 
-const Th = styled.th`
-  border: 1px solid #dcdcdc;
-  padding: 10px;
-  background-color: #f0f0f0;
-`;
-
 const Td = styled.td`
   border: 1px solid #dcdcdc;
   padding: 10px;
-`;
-
-const Button = styled.button`
-  background-color: #3565f6;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #274bcf;
-  }
+  text-align: center;
+  font-weight: 400;
 `;
 
 const RequestConfirmation: React.FC = () => {
@@ -63,24 +50,26 @@ const RequestConfirmation: React.FC = () => {
     return <p>Error: {error}</p>;
   }
 
+  const columns = [
+    "신청 유형",
+    "정정 날짜",
+    "시작 시간",
+    "종료 시간",
+    "시작 날짜",
+    "종료 날짜",
+    "추가 내용",
+    "예상 수당",
+    "상태",
+    "조치",
+  ];
+
   return (
     <Container>
-      <h2>신청 내역 확인</h2>
+      <h3>신청 내역 확인</h3>
       <Table>
-        <thead>
-          <tr>
-            <Th>신청 유형</Th>
-            <Th>정정 날짜</Th>
-            <Th>시작 시간</Th>
-            <Th>종료 시간</Th>
-            <Th>추가 내용</Th>
-            <Th>예상 수당</Th>
-            <Th>상태</Th>
-            <Th>조치</Th>
-          </tr>
-        </thead>
+        <TableHeader columns={columns} />
         <tbody>
-          {workRecords.flat().map((request: any) => (
+          {workRecords.map((request) => (
             <tr key={request.id}>
               <Td>{request.type || "N/A"}</Td>
               <Td>{request.startDate || "N/A"}</Td>
@@ -94,7 +83,9 @@ const RequestConfirmation: React.FC = () => {
               </Td>
               <Td>{request.status || "N/A"}</Td>
               <Td>
-                <Button onClick={() => handleDelete(request.id)}>삭제</Button>
+                <BlueButtonSml onClick={() => handleDelete(request.id)}>
+                  삭제
+                </BlueButtonSml>
               </Td>
             </tr>
           ))}
