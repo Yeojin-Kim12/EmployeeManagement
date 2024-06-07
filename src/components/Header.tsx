@@ -1,5 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../hooks/useAuth";
 
 const items = [
   { name: "내 인사정보", url: "/profile" },
@@ -12,21 +13,40 @@ const items = [
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOutUser } = useAuth();
+
+  const handleLogout = () => {
+    signOutUser();
+    navigate("/login");
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!user) {
+      e.preventDefault();
+      alert("권한이 없습니다. 로그인 해주세요.");
+    }
+  };
 
   return (
     <HeaderContainer>
-      <TitleLink to="/">EMS</TitleLink>
+      <TitleLink to="/">PLATFORM</TitleLink>
       <Nav>
         <ul>
           {items.map((item) => (
             <Navli key={item.name}>
-              <NavLink to={item.url} $isActive={location.pathname === item.url}>
+              <NavLink
+                to={user ? item.url : "#"}
+                $isActive={location.pathname === item.url}
+                onClick={handleClick}
+              >
                 {item.name}
               </NavLink>
             </Navli>
           ))}
         </ul>
       </Nav>
+      {user && <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>}
     </HeaderContainer>
   );
 };
@@ -40,6 +60,7 @@ const HeaderContainer = styled.header`
   margin-left: 10px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 `;
 const Nav = styled.nav`
   ul {
@@ -50,20 +71,10 @@ const Nav = styled.nav`
   }
 `;
 const TitleLink = styled(Link)`
-  color: var(--color-blue);
+  color: #3565f6;
   font-size: 27px;
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: none;
-
-  &::before {
-    content: "";
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    margin-right: 10px;
-    background: url("/apps_24dp_FILL0_wght400_GRAD0_opsz24.svg") no-repeat
-      center center;
-  }
 `;
 const Navli = styled.li`
   margin-left: 10px;
@@ -71,7 +82,21 @@ const Navli = styled.li`
 const NavLink = styled(Link)<{ $isActive: boolean }>`
   color: ${(props) => (props.$isActive ? "#161616" : "#8b8b8b")};
   text-decoration: none;
-  padding: 5px;
   font-size: 16px;
-  font-weight: 500;
+  cursor: pointer;
+`;
+
+const LogoutButton = styled.button`
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #d32f2f;
+  }
 `;
