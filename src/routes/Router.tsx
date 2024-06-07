@@ -1,6 +1,6 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import Calendar from "../pages/Calendar";
-import PayrollDetails from "../pages/PayrollDetails";
+// import PayrollDetails from "../pages/PayrollDetails";
 import CorrectionRequest from "../pages/CorrectionRequest";
 import RequestList from "../pages/RequestList";
 import RequestManagement from "../pages/RequestManagement";
@@ -40,14 +40,14 @@ const AppRouter = () => {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/payroll-details"
           element={
             <PrivateRoute>
               <PayrollDetails />
             </PrivateRoute>
           }
-        />
+        /> */}
         <Route
           path="/correction-request"
           element={
