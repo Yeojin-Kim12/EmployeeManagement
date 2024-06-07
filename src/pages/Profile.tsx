@@ -1,21 +1,19 @@
 import styled from "styled-components";
 import ProfileImage from "../components/Profile/ProfileImage";
 import ProfileInfo from "../components/Profile/ProfileInfo";
-import { useEffect
-
- } from "react";
+import { useEffect } from "react";
 const ProfileContainer = styled.div`
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 80vh;
-  height: 80vh;
+  height: 60vh;
 `;
 
 const Profile = () => {
   useEffect(() => {
-    console.log('open profile page')
+    console.log("open profile page");
   }, []);
 
   return (
@@ -24,6 +22,6 @@ const Profile = () => {
       <ProfileInfo />
     </ProfileContainer>
   );
-}
+};
 
 export default Profile;

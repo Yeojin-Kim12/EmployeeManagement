@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { useState, useEffect, useRef } from 'react';
-import { useUser } from '../../hooks/useUser';
+import { useState, useEffect, useRef } from "react";
+import { useUser } from "../../hooks/useUser";
 import { useAuth } from "../../hooks/useAuth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { LoadingSpinner } from "./LoadingSpinner";
@@ -12,9 +12,9 @@ const ProfileImageContainer = styled.div`
 `;
 
 const ImageWrapper = styled.div`
-  width: 100%; 
-  position: relative; 
-  padding-top: 100%; 
+  width: 100%;
+  position: relative;
+  padding-top: 100%;
   border-radius: 50%;
   overflow: hidden;
   background-color: black;
@@ -30,14 +30,15 @@ const Image = styled.img`
   border-radius: 50%;
 `;
 
-
 const EditButton = styled.button`
   margin-top: 1.5rem;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   cursor: pointer;
-  opacity: ${(props) => (props.disabled ? "0.5" : "1")}; // 비활성화 시 투명도 조절
-  pointer-events: ${(props) => (props.disabled ? "none" : "auto")}; // 비활성화 시 클릭 이벤트 제거
+  opacity: ${(props) =>
+    props.disabled ? "0.5" : "1"}; // 비활성화 시 투명도 조절
+  pointer-events: ${(props) =>
+    props.disabled ? "none" : "auto"}; // 비활성화 시 클릭 이벤트 제거
 `;
 
 const HiddenFileInput = styled.input`
@@ -91,14 +92,19 @@ const ProfileImage = () => {
     }
   };
 
-  if (loading) return <ProfileImageContainer><LoadingSpinner/></ProfileImageContainer>;
+  if (loading)
+    return (
+      <ProfileImageContainer>
+        <LoadingSpinner />
+      </ProfileImageContainer>
+    );
   if (error) return <p>Error: {error}</p>;
   if (!userInfo) return <p>유저 정보를 불러오지 못했습니다.</p>;
 
   return (
     <ProfileImageContainer>
       <ImageWrapper>
-        <Image src={userInfo?.photoURL || '디폴트이미지'}alt="Profile" />
+        <Image src={userInfo?.photoURL || "디폴트이미지"} alt="Profile" />
       </ImageWrapper>
       <EditButton
         onClick={handleEditButtonClick}
