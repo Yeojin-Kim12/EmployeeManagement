@@ -32,9 +32,11 @@ const Image = styled.img`
 
 const EditButton = styled.button`
   margin-top: 1.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  padding: 0.5rem 1rem;  
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 15px;
   opacity: ${(props) =>
     props.disabled ? "0.5" : "1"}; // 비활성화 시 투명도 조절
   pointer-events: ${(props) =>
