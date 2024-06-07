@@ -7,15 +7,17 @@ const Container = styled.div`
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  margin: 5% auto;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
+  width: 25%;
 `;
 
 const Input = styled.input`
   padding: 10px;
   margin: 10px;
+  height: 30px;
   border: 1px solid #dcdcdc;
+  border-radius: 15px;
 `;
 
 const Select = styled.select`
@@ -31,7 +33,10 @@ const Button = styled.button`
   padding: 10px 20px;
   margin: 10px;
   border: none;
+  border-radius: 15px;
   cursor: pointer;
+  width: 100%;
+  height: 45px;
 `;
 
 const ModalBackground = styled.div`
