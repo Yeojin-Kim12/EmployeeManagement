@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ProfileImage from "../components/Profile/ProfileImage";
 import ProfileInfo from "../components/Profile/ProfileInfo";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 const ProfileContainer = styled.div`
   margin: 0 auto;
   display: flex;
