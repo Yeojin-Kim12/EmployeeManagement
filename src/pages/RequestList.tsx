@@ -75,6 +75,8 @@ const RequestConfirmation: React.FC = () => {
               <Td>{request.startDate || "N/A"}</Td>
               <Td>{request.startTime || "N/A"}</Td>
               <Td>{request.endTime || "N/A"}</Td>
+              <Td>{request.startDate || "N/A"}</Td>
+              <Td>{request.endDate || "N/A"}</Td>
               <Td>{request.additionalInfo || "N/A"}</Td>
               <Td>
                 {request.estimatedPay

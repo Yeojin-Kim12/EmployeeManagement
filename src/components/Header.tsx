@@ -30,7 +30,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <TitleLink to="/">PLATFORM</TitleLink>
+      <TitleLink to="/">EMS</TitleLink>
       <Nav>
         <ul>
           {items.map((item) => (
@@ -60,7 +60,7 @@ const HeaderContainer = styled.header`
   margin-left: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  position: relative;
 `;
 const Nav = styled.nav`
   ul {
@@ -71,10 +71,20 @@ const Nav = styled.nav`
   }
 `;
 const TitleLink = styled(Link)`
-  color: #3565f6;
+  color: var(--color-blue);
   font-size: 27px;
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+    background: url("/apps_24dp_FILL0_wght400_GRAD0_opsz24.svg") no-repeat
+      center center;
+  }
 `;
 const Navli = styled.li`
   margin-left: 10px;
@@ -82,21 +92,25 @@ const Navli = styled.li`
 const NavLink = styled(Link)<{ $isActive: boolean }>`
   color: ${(props) => (props.$isActive ? "#161616" : "#8b8b8b")};
   text-decoration: none;
+  padding: 5px;
   font-size: 16px;
-  cursor: pointer;
+  font-weight: 500;
 `;
 
 const LogoutButton = styled.button`
-  background-color: #f44336;
-  color: white;
+  background-color: var(--color-gray);
+  color: var(--color-black);
   border: none;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 10px;
+  width: 100px;
+  position: absolute;
+  right: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 10px;
+  border-radius: 15px;
   cursor: pointer;
-  border-radius: 5px;
-  margin-right: 10px;
-
   &:hover {
-    background-color: #d32f2f;
+    background-color: #97a3b2;
   }
 `;
