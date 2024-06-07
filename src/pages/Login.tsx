@@ -1,3 +1,4 @@
+// Login.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../hooks/useAuth";
@@ -31,6 +32,8 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [additionalData, setAdditionalData] = useState({ displayName: "" });
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const { user, signIn, signInWithGoogle, register, signOutUser } = useAuth();
 
   const handleLogin = async () => {
@@ -48,7 +51,7 @@ const Login: React.FC = () => {
       return;
     }
     try {
-      await register(email, password);
+      await register(email, password, additionalData, profileImage);
       alert("회원가입이 완료되었습니다");
     } catch (error) {
       alert("회원가입에 실패했습니다");
@@ -99,6 +102,16 @@ const Login: React.FC = () => {
             placeholder="비밀번호 확인"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="이름"
+            value={additionalData.displayName}
+            onChange={(e) => setAdditionalData({ ...additionalData, displayName: e.target.value })}
+          />
+          <Input
+            type="file"
+            onChange={(e) => setProfileImage(e.target.files ? e.target.files[0] : null)}
           />
           <Button onClick={handleSignUp}>회원가입</Button>
           <Button onClick={() => setIsSignUp(false)}>
