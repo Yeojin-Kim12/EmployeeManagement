@@ -6,6 +6,7 @@ import {
   updateDoc,
   doc,
   query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -61,6 +62,8 @@ export const fetchWorkRecords = createAsyncThunk(
     }
   }
 );
+
+
 // 정정 관리 업데이트
 export const updateWorkRecord = createAsyncThunk(
   "work/updateWorkRecord",

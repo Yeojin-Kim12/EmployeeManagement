@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useWork } from "../hooks/useWork";
 import { useDispatch } from "react-redux";
 import { deleteDoc, doc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { fetchWorkRecords } from "../redux/slices/workSlice";
 import { AppDispatch } from "../redux/store";
 import TableHeader from "../components/Payroll/TableHeader";
 import { BlueButtonSml } from "../GlobalStyles";
+import { useWork } from "../hooks/useWork";
 
 const Container = styled.div`
   padding: 20px;
@@ -28,14 +29,26 @@ const Td = styled.td`
 const RequestConfirmation: React.FC = () => {
   const { workRecords, loading, error } = useWork();
   const dispatch = useDispatch<AppDispatch>();
+  const [filteredRecords, setFilteredRecords] = useState<any[]>([]);
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   useEffect(() => {
-    dispatch(fetchWorkRecords());
-  }, [dispatch]);
+    if (user) {
+      dispatch(fetchWorkRecords());
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    if (user && workRecords) {
+      const userRecords = workRecords.filter(record => record.email === user.email);
+      setFilteredRecords(userRecords);
+    }
+  }, [workRecords, user]);
 
   useEffect(() => {
     console.log("workRecords:", workRecords);
-  }, [workRecords]); // 이펙트를 workRecords가 변경될 때마다 실행되도록 설정
+  }, [workRecords]);
 
   const handleDelete = async (id: string) => {
     await deleteDoc(doc(db, "workRecords", id));
@@ -48,6 +61,10 @@ const RequestConfirmation: React.FC = () => {
 
   if (error) {
     return <p>Error: {error}</p>;
+  }
+
+  if (!user) {
+    return <p>Please log in to view your work records.</p>;
   }
 
   const columns = [
@@ -69,7 +86,7 @@ const RequestConfirmation: React.FC = () => {
       <Table>
         <TableHeader columns={columns} />
         <tbody>
-          {workRecords.map((request) => (
+          {filteredRecords.map((request) => (
             <tr key={request.id}>
               <Td>{request.type || "N/A"}</Td>
               <Td>{request.startDate || "N/A"}</Td>
