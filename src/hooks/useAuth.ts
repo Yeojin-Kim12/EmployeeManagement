@@ -1,4 +1,3 @@
-//useAuth.ts
 import { useDispatch, useSelector } from "react-redux";
 import {
   signInWithEmailAndPassword,
@@ -27,6 +26,7 @@ export const useAuth = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 추가
 
   const persistUser = async (userData: UserData) => {
     const userDoc = doc(db, "users", userData.email);
@@ -127,6 +127,7 @@ export const useAuth = () => {
       const userData: UserData = JSON.parse(storedUser);
       dispatch(setUser(userData));
     }
+    setLoading(false); // 로딩 상태 업데이트
   }, [dispatch]);
 
   useEffect(() => {
@@ -141,5 +142,6 @@ export const useAuth = () => {
     signOutUser,
     loadUserFromLocalStorage,
     error,
+    loading, // 로딩 상태 반환
   };
 };
