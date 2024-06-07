@@ -30,7 +30,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <TitleLink to="/">PLATFORM</TitleLink>
+      <TitleLink to="/">EMS</TitleLink>
       <Nav>
         <ul>
           {items.map((item) => (
