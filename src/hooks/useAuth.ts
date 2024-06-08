@@ -1,4 +1,3 @@
-//useAuth.ts
 import { useDispatch, useSelector } from "react-redux";
 import {
   signInWithEmailAndPassword,
@@ -7,12 +6,12 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { auth, db, storage } from "../firebase"; // Firebase Storage 추가
+import { auth, db, storage } from "../firebase";
 import { setUser, clearUser } from "../redux/slices/authSlice";
 import { RootState } from "../redux/store";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useEffect, useCallback, useState } from "react";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage 관련 함수 추가
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface UserData {
   email: string;
@@ -27,6 +26,7 @@ export const useAuth = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 추가
 
   const persistUser = async (userData: UserData) => {
     const userDoc = doc(db, "users", userData.email);
@@ -127,6 +127,7 @@ export const useAuth = () => {
       const userData: UserData = JSON.parse(storedUser);
       dispatch(setUser(userData));
     }
+    setLoading(false); // 로딩 상태 업데이트
   }, [dispatch]);
 
   useEffect(() => {
@@ -141,5 +142,6 @@ export const useAuth = () => {
     signOutUser,
     loadUserFromLocalStorage,
     error,
+    loading, // 로딩 상태 반환
   };
 };
