@@ -61,6 +61,7 @@ export const fetchWorkRecords = createAsyncThunk(
     }
   }
 );
+
 // 정정 관리 업데이트
 export const updateWorkRecord = createAsyncThunk(
   "work/updateWorkRecord",
@@ -142,7 +143,7 @@ const handleFulfilled = (
     if (Array.isArray(action.payload)) {
       const workRecords = action.payload.map((record: any) => ({
         ...record,
-        createdAt: record.createdAt.toDate(), // Convert _Timestamp to Date
+        createdAt: record.createdAt.toDate(),
       }));
       console.log("Updated workRecords:", workRecords);
       state.workRecords = workRecords;
