@@ -10,7 +10,7 @@ EMS를 통해서 직원은 본인의 급여 내역을 확인할 수 있고, 정�
 
 #### <u>배포링크</u>
 
-https://deploy-preview-6--toy2-group3.netlify.app/
+https://toy2-group3.netlify.app/
 
 <hr>
 
