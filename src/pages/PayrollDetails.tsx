@@ -2,19 +2,6 @@ import styled from "styled-components";
 import ProfileInfo from "../components/Profile/ProfileInfo";
 import Details from "../components/Payroll/Details";
 
-// interface Employee {
-//   name: string;
-//   department: string;
-//   position: string;
-//   hireDate: string;
-// }
-
-// interface PayrollDetailsProps {
-//   employee: Employee;
-//   payroll: string;
-//   // payroll: { date: string; amount: number }[];
-// }
-
 const Container = styled.div`
   padding: 20px;
   display: flex;

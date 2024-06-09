@@ -1,5 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../hooks/useAuth";
 
 const items = [
   { name: "내 인사정보", url: "/profile" },
@@ -12,6 +13,20 @@ const items = [
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOutUser } = useAuth();
+
+  const handleLogout = () => {
+    signOutUser();
+    navigate("/login");
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!user) {
+      e.preventDefault();
+      alert("권한이 없습니다. 로그인 해주세요.");
+    }
+  };
 
   return (
     <HeaderContainer>
@@ -20,13 +35,18 @@ const Header = () => {
         <ul>
           {items.map((item) => (
             <Navli key={item.name}>
-              <NavLink to={item.url} $isActive={location.pathname === item.url}>
+              <NavLink
+                to={user ? item.url : "#"}
+                $isActive={location.pathname === item.url}
+                onClick={handleClick}
+              >
                 {item.name}
               </NavLink>
             </Navli>
           ))}
         </ul>
       </Nav>
+      {user && <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>}
     </HeaderContainer>
   );
 };
@@ -40,6 +60,7 @@ const HeaderContainer = styled.header`
   margin-left: 10px;
   display: flex;
   align-items: center;
+  position: relative;
 `;
 const Nav = styled.nav`
   ul {
@@ -74,4 +95,22 @@ const NavLink = styled(Link)<{ $isActive: boolean }>`
   padding: 5px;
   font-size: 16px;
   font-weight: 500;
+`;
+
+const LogoutButton = styled.button`
+  background-color: var(--color-gray);
+  color: var(--color-black);
+  border: none;
+  padding: 10px;
+  width: 100px;
+  position: absolute;
+  right: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: #97a3b2;
+  }
 `;

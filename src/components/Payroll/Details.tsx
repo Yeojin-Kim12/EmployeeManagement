@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { useUser } from "../../hooks/useUser";
 import { BlueButton } from "../../GlobalStyles";
 import { calculateNewSalary, generateSamplePayroll } from "../../utils/payroll";
 
@@ -23,19 +24,14 @@ const Td = styled.td`
   font-weight: 400;
 `;
 
-const sampleEmployee = {
-  name: "김패캠",
-  department: "개발부",
-  position: "주임",
-  hireDate: "2020-01-01",
-};
-
 const Detail = () => {
+  const { userInfo } = useUser();
+
   const baseSalary = 4000000;
-  const newSalary = calculateNewSalary(baseSalary, sampleEmployee.hireDate);
+  const newSalary = calculateNewSalary(baseSalary, userInfo?.joinDate);
 
   const [visibleMonths, setVisibleMonths] = useState(3);
-  const samplePayroll = generateSamplePayroll(10, sampleEmployee.hireDate);
+  const samplePayroll = generateSamplePayroll(10, userInfo?.joinDate);
 
   const handleShowMore = () => {
     setVisibleMonths((prev) => prev + 3);

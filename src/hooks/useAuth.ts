@@ -1,10 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
-import { signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth, db } from "../firebase";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { auth, db, storage } from "../firebase";
 import { setUser, clearUser } from "../redux/slices/authSlice";
 import { RootState } from "../redux/store";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useEffect, useCallback, useState } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface UserData {
   email: string;
@@ -19,6 +26,7 @@ export const useAuth = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 추가
 
   const persistUser = async (userData: UserData) => {
     const userDoc = doc(db, "users", userData.email);
@@ -32,9 +40,25 @@ export const useAuth = () => {
     dispatch(setUser(userData));
   };
 
+  const uploadProfileImage = async (
+    email: string,
+    file: File | null
+  ): Promise<string | null> => {
+    if (!file) return null;
+
+    const storageRef = ref(storage, `profileImages/${email}`);
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef);
+    return photoURL;
+  };
+
   const signIn = async (email: string, password: string) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const userData: UserData = {
         email: userCredential.user.email,
       } as UserData;
@@ -61,11 +85,23 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    additionalData: Partial<UserData>,
+    profileImage: File | null
+  ) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const photoURL = await uploadProfileImage(email, profileImage);
       const userData: UserData = {
         email: userCredential.user.email,
+        photoURL,
+        ...additionalData,
       } as UserData;
       await persistUser(userData);
       setError(null);
@@ -91,6 +127,7 @@ export const useAuth = () => {
       const userData: UserData = JSON.parse(storedUser);
       dispatch(setUser(userData));
     }
+    setLoading(false); // 로딩 상태 업데이트
   }, [dispatch]);
 
   useEffect(() => {
@@ -105,5 +142,6 @@ export const useAuth = () => {
     signOutUser,
     loadUserFromLocalStorage,
     error,
+    loading, // 로딩 상태 반환
   };
 };

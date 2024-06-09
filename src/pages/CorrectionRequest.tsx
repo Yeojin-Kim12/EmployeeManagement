@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store"; // AppDispatch를 가져옵니다.
 import { uploadWorkRecord } from "../redux/slices/workSlice";
 import { useWork } from "../hooks/useWork";
+import { getAuth } from "firebase/auth"; 
 
 const Container = styled.div`
   width: 800px;
@@ -53,12 +54,18 @@ const CorrectionRequest: React.FC = () => {
   const [type, setType] = useState<"연장근무" | "무급휴가" | "휴일근무">(
     "연장근무"
   );
+   
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+
   const [details, setDetails] = useState({
     startDate: "",
     endDate: "",
     startTime: "",
     endTime: "",
     additionalInfo: "",
+    email: user?.email || "", 
   });
   const [showPopup, setShowPopup] = useState(false);
 
