@@ -10,14 +10,14 @@ EMS를 통해서 직원은 본인의 급여 내역을 확인할 수 있고, 정�
 
 #### <u>배포링크</u>
 
-https://deploy-preview-6--toy2-group3.netlify.app/
+https://toy2-group3.netlify.app/
 
 <hr>
 
 ## 토이프로젝트2 3조 소개
 
 <strong>김상화</strong> (https://github.com/Iam-Sanghwa/)<br>
-개발 환경, Routing, Hook, Redux 설정
+개발 환경, Routing, Hook, Redux 설정, 프로필
 <br><br>
 <strong>김송희</strong> (https://github.com/lunatokki)<br>
 로그인, 회원가입
@@ -52,7 +52,7 @@ https://deploy-preview-6--toy2-group3.netlify.app/
 1. Routing
 
 - Private/Public Routing을 활용한 로그인 여부에 따른 페이지 라우팅 분리
-- useLocation을 활용한 리다이렉션 처리(를 해야합니다..)
+- useLocation을 활용한 리다이렉션 처리
 
 2. Custom hook
 
