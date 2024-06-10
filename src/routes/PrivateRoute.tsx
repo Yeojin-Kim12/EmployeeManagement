@@ -11,7 +11,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   if (loading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
   }
-
+  console.log('private user before loading', user)
   return user ? children : <Navigate to="/login" />;
 };
 
