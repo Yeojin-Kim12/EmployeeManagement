@@ -28,6 +28,19 @@ const ButtonContainer = styled.div`
   justify-content: space-evenly;
 `;
 
+const columns = [
+  "신청 유형",
+  "정정 날짜",
+  "시작 시간",
+  "종료 시간",
+  "시작 날짜",
+  "종료 날짜",
+  "추가 내용",
+  "예상 수당",
+  "상태",
+  "조치",
+];
+
 const RequestManagement: React.FC = () => {
   const { workRecords, loading, error } = useWork();
   const dispatch = useDispatch<AppDispatch>();
@@ -62,19 +75,6 @@ const RequestManagement: React.FC = () => {
   if (error) {
     return <p>Error: {error}</p>;
   }
-
-  const columns = [
-    "신청 유형",
-    "정정 날짜",
-    "시작 시간",
-    "종료 시간",
-    "시작 날짜",
-    "종료 날짜",
-    "추가 내용",
-    "예상 수당",
-    "상태",
-    "조치",
-  ];
 
   return (
     <Container>

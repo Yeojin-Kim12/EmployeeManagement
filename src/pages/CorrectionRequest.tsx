@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store"; // AppDispatch를 가져옵니다.
 import { uploadWorkRecord } from "../redux/slices/workSlice";
 import { useWork } from "../hooks/useWork";
-import { getAuth } from "firebase/auth"; 
+import { getAuth } from "firebase/auth";
 
 const Container = styled.div`
   width: 800px;
@@ -48,16 +48,15 @@ const TextArea = styled.textarea`
   font-size: 1rem;
 `;
 
+type WorkType = "연장근무" | "무급휴가" | "휴일근무";
+
 const CorrectionRequest: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>(); // useDispatch에 AppDispatch 타입을 지정합니다.
   const { estimatedPay, calculatePay } = useWork();
-  const [type, setType] = useState<"연장근무" | "무급휴가" | "휴일근무">(
-    "연장근무"
-  );
-   
+  const [type, setType] = useState<WorkType>("연장근무");
+
   const auth = getAuth();
   const user = auth.currentUser;
-
 
   const [details, setDetails] = useState({
     startDate: "",
@@ -65,12 +64,12 @@ const CorrectionRequest: React.FC = () => {
     startTime: "",
     endTime: "",
     additionalInfo: "",
-    email: user?.email || "", 
+    email: user?.email || "",
   });
   const [showPopup, setShowPopup] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     const workRecord = {
       type,
       ...details,
@@ -91,9 +90,7 @@ const CorrectionRequest: React.FC = () => {
             신청 유형:
             <Select
               value={type}
-              onChange={(e) =>
-                setType(e.target.value as "연장근무" | "무급휴가" | "휴일근무")
-              }
+              onChange={(e) => setType(e.target.value as WorkType)}
             >
               <option value="연장근무">연장근무</option>
               <option value="무급휴가">무급휴가</option>
