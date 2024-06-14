@@ -6,6 +6,7 @@ import { AppDispatch } from "../redux/store"; // AppDispatch를 가져옵니다.
 import { uploadWorkRecord } from "../redux/slices/workSlice";
 import { useWork } from "../hooks/useWork";
 import { getAuth } from "firebase/auth";
+import { useUser } from "../hooks/useUser";
 
 const Container = styled.div`
   width: 800px;
@@ -57,7 +58,7 @@ const CorrectionRequest: React.FC = () => {
 
   const auth = getAuth();
   const user = auth.currentUser;
-
+  const { userInfo } = useUser();
   const [details, setDetails] = useState({
     startDate: "",
     endDate: "",
@@ -65,6 +66,7 @@ const CorrectionRequest: React.FC = () => {
     endTime: "",
     additionalInfo: "",
     email: user?.email || "",
+    displayName: userInfo.displayName || "",
   });
   const [showPopup, setShowPopup] = useState(false);
 

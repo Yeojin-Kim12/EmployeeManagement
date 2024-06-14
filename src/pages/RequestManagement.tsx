@@ -29,6 +29,7 @@ const ButtonContainer = styled.div`
 `;
 
 const columns = [
+  "이름",
   "신청 유형",
   "정정 날짜",
   "시작 시간",
@@ -43,15 +44,16 @@ const columns = [
 
 const RequestManagement: React.FC = () => {
   const { workRecords, loading, error } = useWork();
+
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(fetchWorkRecords());
-  }, [dispatch]);
+  }, []);
 
-  useEffect(() => {
-    console.log("workRecords:", workRecords);
-  }, [workRecords]); // 이펙트를 workRecords가 변경될 때마다 실행되도록 설정
+  // useEffect(() => {
+  //   console.log("workRecords:", workRecords);
+  // }, [workRecords]); // 이펙트를 workRecords가 변경될 때마다 실행되도록 설정
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
@@ -68,13 +70,8 @@ const RequestManagement: React.FC = () => {
     dispatch(fetchWorkRecords());
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <Container>
@@ -84,6 +81,7 @@ const RequestManagement: React.FC = () => {
         <tbody>
           {workRecords.map((request) => (
             <tr key={request.id}>
+              <Td>{request.displayName}</Td>
               <Td>{request.type}</Td>
               <Td>{request.startDate || "N/A"}</Td>
               <Td>{request.startTime || "N/A"}</Td>
