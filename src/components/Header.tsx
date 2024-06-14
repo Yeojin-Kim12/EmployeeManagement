@@ -1,13 +1,13 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 
 const items = [
   { name: "내 인사정보", url: "/profile" },
   { name: "급여 내역", url: "/payroll-details" },
   { name: "정정 신청", url: "/correction-request" },
   { name: "정정 내역", url: "/request-list" },
-  { name: "정정 관리", url: "/request-management" },
   { name: "업무 관리", url: "/calendar" },
 ];
 
@@ -15,6 +15,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOutUser } = useAuth();
+  const { userInfo } = useUser();
 
   const handleLogout = () => {
     signOutUser();
@@ -28,12 +29,17 @@ const Header = () => {
     }
   };
 
+  const filteredItems =
+    user && userInfo.position === "팀장"
+      ? [...items, { name: "정정 관리", url: "/request-management" }]
+      : items;
+
   return (
     <HeaderContainer>
       <TitleLink to="/">EMS</TitleLink>
       <Nav>
         <ul>
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <Navli key={item.name}>
               <NavLink
                 to={user ? item.url : "#"}

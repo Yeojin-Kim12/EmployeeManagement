@@ -17,7 +17,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   button {
-    background-color: #3565F6;
+    background-color: var(--color-blue);
     color: #fff;
     border: none;
     padding: 10px 20px;
